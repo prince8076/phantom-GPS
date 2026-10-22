@@ -54,6 +54,11 @@ let isRandomPoolMode = true; // Randomize across all global nodes instead of seq
 let rotationHistory = [];
 let verifiedPublicIp = null;
 
+// VPN config pushed from the web dashboard ("Push to phone").
+// Consumed by the Android app via GET /api/vpn/config.
+let vpnConfig = null;
+let vpnConfigUpdatedAt = null;
+
 // Get Real Wi-Fi / Local LAN IP for Mobile Access (ignoring Cloudflare WARP / virtual adapters)
 function getLocalLanIp() {
   const interfaces = os.networkInterfaces();
@@ -323,7 +328,8 @@ app.get('/api/status', async (req, res) => {
     mobileUrl: `http://${lanIp}:${UI_PORT}`,
     chromeConnected,
     connectedUsers: activeUsers,
-    activeUserCount: activeUsers.length
+    activeUserCount: activeUsers.length,
+    vpnConfigUpdatedAt
   });
 });
 
@@ -386,6 +392,30 @@ app.post('/api/select-node', async (req, res) => {
     await rotateNode(idx, `Selected ${PROXY_NODES[idx].city}`);
   }
   res.json({ success: true, currentNode: PROXY_NODES[currentNodeIndex] });
+});
+
+// ---- VPN config sync (web dashboard -> control hub -> Android app) ----
+// Dashboard pushes the full `phantom-vpn-config` payload here (see VPN_CONFIG_CONTRACT.md).
+app.post('/api/vpn-config', (req, res) => {
+  const cfg = req.body;
+  if (!cfg || typeof cfg !== 'object' || Array.isArray(cfg)) {
+    return res.status(400).json({ ok: false, error: 'Expected a JSON object payload' });
+  }
+  if (cfg.contract && cfg.contract !== 'phantom-vpn-config') {
+    return res.status(400).json({ ok: false, error: `Unknown contract: ${cfg.contract}` });
+  }
+  vpnConfig = cfg;
+  vpnConfigUpdatedAt = new Date().toISOString();
+  console.log(`[VPN] Config updated at ${vpnConfigUpdatedAt} (protocol=${cfg.protocol || 'smart'}, netshield=${cfg.netshield || 'off'})`);
+  res.json({ ok: true, appliedAt: vpnConfigUpdatedAt });
+});
+
+// Android app fetches the latest pushed config from here.
+app.get('/api/vpn/config', (req, res) => {
+  if (!vpnConfig) {
+    return res.status(404).json({ ok: false, error: 'No VPN config has been pushed yet' });
+  }
+  res.json({ ok: true, appliedAt: vpnConfigUpdatedAt, config: vpnConfig });
 });
 
 // Geocoding Search API (Converts place names like "Uttam Nagar" or "DESU Colony" into coordinates)
