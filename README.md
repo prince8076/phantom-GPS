@@ -1,4 +1,4 @@
-# OmniRush GeoIP Chameleon & Multi-Modal Stealth Network
+# GeoIP Chameleon & Multi-Modal Stealth Network
 
 > Enterprise-Grade Geo-Spoofing, Multi-Hop Dynamic Proxy Routing, Velocity Interpolation & 5-Layer Anti-Tracking Fortress for Windows & Android.
 
@@ -42,7 +42,7 @@ node c:\Users\rahul\omnirush.ai\desktop-app\server.js
 
 ### 2. Connect Your Phone
 - Scan the on-screen QR Code with your phone camera.
-- In Android **Developer Options**, set **"Select mock location app"** to **OmniRush GPS**.
+- In Android **Developer Options**, set **"Select mock location app"** to ** GPS**.
 - All location queries on your device now follow the laptop's rotation schedule or active travel route.
 
 ---
