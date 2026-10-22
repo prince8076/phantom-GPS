@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>phantom — self-hosted VPN & privacy platform for every device</title>
+  <meta name="description" content="Phantom is a self-hosted privacy platform: WireGuard VPN, tracker & malware blocking, and location control for Android, Chrome, and your computer. Your server. Your rules." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #06080d;
+      --card-bg: rgba(14, 19, 29, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --neon-cyan: #00f0ff;
+      --neon-teal: #00f2a9;
+      --neon-crimson: #ff3b69;
+      --text-primary: #ffffff;
+      --text-muted: #8a99ad;
+      --text-dim: #4d5b6e;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.07) 0%, transparent 55%),
+        radial-gradient(circle at 90% 90%, rgba(0, 242, 169, 0.04) 0%, transparent 50%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    .wrap { max-width: 1140px; margin: 0 auto; padding: 0 28px; }
+
+    /* NAV */
+    nav {
+      position: sticky; top: 0; z-index: 50;
+      backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+      background: rgba(6, 8, 13, 0.8);
+      border-bottom: 1px solid var(--card-border);
+    }
+    .nav-inner { max-width: 1140px; margin: 0 auto; padding: 14px 28px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; color: #fff; }
+    .brand-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      background: linear-gradient(135deg, rgba(0,240,255,.2), rgba(0,242,169,.05));
+      border: 1px solid rgba(0,240,255,.3); font-size: 18px; }
+    .brand b { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; }
+    .brand b span { background: linear-gradient(90deg, var(--neon-cyan), var(--neon-teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .nav-links { display: flex; gap: 28px; align-items: center; }
+    .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 14px; font-weight: 600; }
+    .nav-links a:hover { color: #fff; }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 26px; border-radius: 40px;
+      font-weight: 700; font-size: 14px; text-decoration: none; cursor: pointer; border: none; transition: all .2s; }
+    .btn-primary { background: linear-gradient(90deg, var(--neon-cyan), var(--neon-teal)); color: #04110d; box-shadow: 0 4px 24px rgba(0,240,255,.25); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 32px rgba(0,240,255,.35); }
+    .btn-ghost { background: rgba(255,255,255,.04); border: 1px solid var(--card-border); color: #fff; }
+    .btn-ghost:hover { border-color: var(--neon-cyan); }
+    .btn-sm { padding: 9px 20px; font-size: 13px; }
+
+    /* HERO */
+    .hero { padding: 90px 0 70px; display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 60px; align-items: center; }
+    .eyebrow { font-family: var(--font-mono); font-size: 12px; color: var(--neon-teal); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 18px; }
+    .hero h1 { font-size: clamp(38px, 5vw, 60px); font-weight: 800; letter-spacing: -1.5px; line-height: 1.08; margin-bottom: 20px; }
+    .hero h1 .grad { background: linear-gradient(90deg, var(--neon-cyan), var(--neon-teal)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p.sub { font-size: 17px; color: var(--text-muted); max-width: 520px; margin-bottom: 32px; }
+    .hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 44px; }
+    .hero-stats { display: flex; gap: 36px; }
+    .stat b { display: block; font-size: 26px; font-weight: 800; color: #fff; }
+    .stat b em { font-style: normal; color: var(--neon-teal); }
+    .stat span { font-size: 12px; color: var(--text-muted); font-family: var(--font-mono); }
+
+    /* hero visual: app mock */
+    .mock { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 24px; padding: 28px;
+      backdrop-filter: blur(20px); box-shadow: 0 24px 80px rgba(0,0,0,.5), 0 0 60px rgba(0,240,255,.06); }
+    .mock-status { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .mock-pill { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px;
+      color: var(--neon-teal); background: rgba(0,242,169,.08); border: 1px solid rgba(0,242,169,.25);
+      padding: 6px 14px; border-radius: 40px; }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--neon-teal); box-shadow: 0 0 10px var(--neon-teal); animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+    .mock-btn { width: 120px; height: 120px; border-radius: 50%; margin: 8px auto 18px; display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(circle, rgba(0,242,169,.15), rgba(0,242,169,.03));
+      border: 2px solid var(--neon-teal); box-shadow: 0 0 40px rgba(0,242,169,.25); font-size: 13px; font-weight: 800; color: var(--neon-teal); font-family: var(--font-mono); }
+    .mock-server { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border: 1px solid var(--card-border); border-radius: 12px; margin-bottom: 10px; background: rgba(8,12,18,.6); }
+    .mock-server.active { border-color: var(--neon-teal); background: rgba(0,242,169,.06); }
+    .mock-server .flag { font-size: 22px; }
+    .mock-server .city { font-size: 13px; font-weight: 700; }
+    .mock-server .country { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+    .mock-server .ms { margin-left: auto; font-family: var(--font-mono); font-size: 11px; color: var(--neon-teal);
+      background: rgba(0,242,169,.08); padding: 2px 10px; border-radius: 12px; }
+
+    /* sections */
+    section.block { padding: 70px 0; }
+    .sec-head { text-align: center; max-width: 640px; margin: 0 auto 48px; }
+    .sec-head h2 { font-size: clamp(28px, 3.5vw, 40px); font-weight: 800; letter-spacing: -1px; margin-bottom: 14px; }
+    .sec-head p { color: var(--text-muted); font-size: 16px; }
+
+    .pillars { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .pillar { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); padding: 32px 28px; backdrop-filter: blur(20px); }
+    .pillar .icon { font-size: 30px; margin-bottom: 16px; }
+    .pillar h3 { font-size: 18px; margin-bottom: 10px; }
+    .pillar p { color: var(--text-muted); font-size: 14px; }
+
+    .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+    .feat { background: rgba(8,12,18,.6); border: 1px solid var(--card-border); border-radius: 14px; padding: 22px; transition: all .2s; }
+    .feat:hover { border-color: rgba(0,240,255,.4); transform: translateY(-2px); }
+    .feat .icon { font-size: 24px; margin-bottom: 10px; }
+    .feat h4 { font-size: 15px; margin-bottom: 6px; }
+    .feat p { font-size: 13px; color: var(--text-muted); }
+
+    /* apps */
+    .apps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .app-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 20px; padding: 34px 30px;
+      display: flex; flex-direction: column; backdrop-filter: blur(20px); position: relative; overflow: hidden; }
+    .app-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-teal)); opacity: .7; }
+    .app-card .icon { font-size: 40px; margin-bottom: 18px; }
+    .app-card h3 { font-size: 20px; margin-bottom: 4px; }
+    .app-card .tag { font-family: var(--font-mono); font-size: 11px; color: var(--neon-teal); margin-bottom: 14px; }
+    .app-card p { color: var(--text-muted); font-size: 14px; margin-bottom: 18px; flex: 1; }
+    .app-card ul { list-style: none; margin-bottom: 24px; }
+    .app-card ul li { font-size: 13px; color: var(--text-muted); padding: 5px 0 5px 24px; position: relative; }
+    .app-card ul li::before { content: '✓'; position: absolute; left: 0; color: var(--neon-teal); font-weight: 700; }
+    .steps { background: rgba(8,12,18,.6); border: 1px solid var(--card-border); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px; font-size: 12px; color: var(--text-muted); }
+    .steps ol { margin: 8px 0 0 18px; }
+    .steps li { margin-bottom: 4px; }
+    .steps code { font-family: var(--font-mono); color: var(--neon-cyan); font-size: 11px; }
+
+    /* how it works */
+    .steps-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; counter-reset: step; }
+    .step { position: relative; padding: 28px; background: var(--card-bg); border: 1px solid var(--card-border); border-radius: var(--radius); }
+    .step .num { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,240,255,.1); border: 1px solid rgba(0,240,255,.35); color: var(--neon-cyan);
+      font-weight: 800; margin-bottom: 16px; }
+    .step h4 { margin-bottom: 8px; }
+    .step p { font-size: 13px; color: var(--text-muted); }
+    .step code { font-family: var(--font-mono); font-size: 12px; color: var(--neon-cyan); }
+
+    /* faq */
+    .faq { max-width: 760px; margin: 0 auto; }
+    .faq-item { border: 1px solid var(--card-border); border-radius: 14px; margin-bottom: 12px; background: var(--card-bg); overflow: hidden; }
+    .faq-q { width: 100%; text-align: left; background: none; border: none; color: #fff; font-family: var(--font-sans);
+      font-size: 15px; font-weight: 700; padding: 20px 24px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .faq-q .chev { color: var(--neon-teal); transition: transform .2s; flex-shrink: 0; }
+    .faq-item.open .faq-q .chev { transform: rotate(180deg); }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height .3s ease; }
+    .faq-a p { padding: 0 24px 22px; color: var(--text-muted); font-size: 14px; }
+
+    /* final cta */
+    .cta-band { background: linear-gradient(135deg, rgba(0,240,255,.08), rgba(0,242,169,.04));
+      border: 1px solid rgba(0,240,255,.25); border-radius: 24px; padding: 60px 40px; text-align: center; margin: 40px 0 70px; }
+    .cta-band h2 { font-size: clamp(26px, 3.5vw, 38px); font-weight: 800; letter-spacing: -1px; margin-bottom: 12px; }
+    .cta-band p { color: var(--text-muted); margin-bottom: 28px; }
+
+    footer { border-top: 1px solid var(--card-border); padding: 40px 0; }
+    .foot { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+    .foot p { font-size: 12px; color: var(--text-dim); font-family: var(--font-mono); }
+    .foot-links { display: flex; gap: 22px; }
+    .foot-links a { font-size: 13px; color: var(--text-muted); text-decoration: none; }
+    .foot-links a:hover { color: #fff; }
+
+    @media (max-width: 900px) {
+      .hero { grid-template-columns: 1fr; padding: 60px 0 50px; }
+      .pillars, .feat-grid, .apps, .steps-row { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a class="brand" href="/landing.html">
+      <span class="brand-icon">👻</span>
+      <b>phantom <span>vpn</span></b>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#apps">Apps</a>
+      <a href="#how">How it works</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="btn btn-primary btn-sm" href="#apps">Get Phantom</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <div class="eyebrow">self-hosted privacy platform</div>
+      <h1>One shield for <span class="grad">every device</span> you own.</h1>
+      <p class="sub">Phantom is a self-hosted VPN and anti-tracking platform for your phone, browser, and computer — WireGuard tunneling, ad &amp; malware blocking, and location control. Your server. Your rules. No accounts, no subscriptions.</p>
+      <div class="hero-ctas">
+        <a class="btn btn-primary" href="#apps">📱 Get the apps</a>
+        <a class="btn btn-ghost" href="/">Open dashboard →</a>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><b><em>34</em></b><span>exit locations</span></div>
+        <div class="stat"><b><em>103</em></b><span>threat domains blocked</span></div>
+        <div class="stat"><b><em>3</em></b><span>apps, one system</span></div>
+      </div>
+    </div>
+    <div class="mock">
+      <div class="mock-status">
+        <span class="mock-pill"><span class="dot"></span> connected</span>
+        <span style="font-family:var(--font-mono);font-size:11px;color:var(--text-dim)">wireguard · 00:14:32</span>
+      </div>
+      <div class="mock-btn">SECURED</div>
+      <div class="mock-server active">
+        <span class="flag">🇮🇸</span>
+        <div><div class="city">Reykjavik</div><div class="country">iceland</div></div>
+        <span class="ms">27ms</span>
+      </div>
+      <div class="mock-server">
+        <span class="flag">🇨🇭</span>
+        <div><div class="city">Zurich</div><div class="country">switzerland</div></div>
+        <span class="ms">25ms</span>
+      </div>
+      <div class="mock-server">
+        <span class="flag">🇯🇵</span>
+        <div><div class="city">Tokyo</div><div class="country">japan</div></div>
+        <span class="ms">15ms</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PILLARS -->
+<div class="wrap">
+  <section class="block" id="why">
+    <div class="sec-head">
+      <div class="eyebrow">why phantom</div>
+      <h2>Privacy you host yourself.</h2>
+      <p>No middlemen, no data brokers, no monthly fees. Phantom runs on hardware you control.</p>
+    </div>
+    <div class="pillars">
+      <div class="pillar">
+        <div class="icon">🔑</div>
+        <h3>You hold the keys</h3>
+        <p>Bring your own WireGuard server — or start with one. Your traffic never touches a third-party VPN company's network, because there isn't one.</p>
+      </div>
+      <div class="pillar">
+        <div class="icon">📱</div>
+        <h3>Every device, one system</h3>
+        <p>Android app, Chrome extension, and desktop control hub share one configuration. Change a server on the dashboard and your phone follows.</p>
+      </div>
+      <div class="pillar">
+        <div class="icon">🛡️</div>
+        <h3>Defense in depth</h3>
+        <p>Kill switch, NetShield filtering, split tunneling, WebRTC leak prevention, and fingerprint defenses — layered so one failure never exposes you.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FEATURES -->
+<div class="wrap">
+  <section class="block" id="features">
+    <div class="sec-head">
+      <div class="eyebrow">features</div>
+      <h2>Battle-tested VPN essentials.</h2>
+      <p>Everything a serious privacy toolkit needs — implemented clean-room, tuned for your own infrastructure.</p>
+    </div>
+    <div class="feat-grid">
+      <div class="feat"><div class="icon">🚫</div><h4>NetShield blocking</h4><p>Blocks ads, trackers, malware, and cryptominers across the browser extension, Android DNS, and dashboard controls.</p></div>
+      <div class="feat"><div class="icon">🔪</div><h4>Kill switch</h4><p>If the tunnel drops, traffic stops. Android Always-on with lockdown mode seals every leak.</p></div>
+      <div class="feat"><div class="icon">✂️</div><h4>Split tunneling</h4><p>Choose which apps and IPs go through the VPN and which stay direct — per-app and per-route.</p></div>
+      <div class="feat"><div class="icon">⚡</div><h4>Smart protocol</h4><p>WireGuard UDP with automatic fallback to TCP and TLS transports when networks get hostile.</p></div>
+      <div class="feat"><div class="icon">🧅</div><h4>Tor over VPN</h4><p>Route Tor through the tunnel for layered anonymity, with guided setup on the dashboard.</p></div>
+      <div class="feat"><div class="icon">🛡️</div><h4>Secure Core routing</h4><p>Multi-hop entry/exit selection for high-risk situations — honored end-to-end once your servers chain.</p></div>
+      <div class="feat"><div class="icon">💧</div><h4>Leak protection</h4><p>WebRTC policies, IPv6 blackholing, DNS-over-HTTPS guidance, and fail-closed proxy routing.</p></div>
+      <div class="feat"><div class="icon">🎭</div><h4>Fingerprint defense</h4><p>Poisons canvas, WebGL, and audio fingerprints while the GPS spoofer controls location signals.</p></div>
+      <div class="feat"><div class="icon">🌍</div><h4>34 exit locations</h4><p>Country-grouped fleet with load scoring, latency, and Streaming / P2P / Tor capability badges.</p></div>
+      <div class="feat"><div class="icon">📍</div><h4>Route simulation</h4><p>Multi-modal travel — foot, bicycle, vehicle, flight — with micro-jitter for realistic movement.</p></div>
+      <div class="feat"><div class="icon">📲</div><h4>QR phone sync</h4><p>Scan once: the dashboard pushes the full VPN configuration to your phone over your own hub.</p></div>
+      <div class="feat"><div class="icon">🔄</div><h4>Auto rotation</h4><p>Rotate exit nodes on your cadence — 1 to 30 minutes — or hop instantly with true-random pooling.</p></div>
+    </div>
+  </section>
+</div>
+
+<!-- APPS -->
+<div class="wrap">
+  <section class="block" id="apps">
+    <div class="sec-head">
+      <div class="eyebrow">get phantom</div>
+      <h2>Three apps. One shield.</h2>
+      <p>Start with any device — they all sync through your control hub.</p>
+    </div>
+    <div class="apps">
+
+      <div class="app-card">
+        <div class="icon">📱</div>
+        <h3>Phantom for Android</h3>
+        <div class="tag">vpn + gps spoofer · apk</div>
+        <p>The full client: WireGuard tunnel with kill switch and split tunneling, connection screen with live server list, plus the GPS route spoofer.</p>
+        <ul>
+          <li>One-tap connect with session stats</li>
+          <li>NetShield DNS filtering</li>
+          <li>Boot auto-connect &amp; quick tile</li>
+        </ul>
+        <a class="btn btn-primary" href="/OmniRush-GPS.apk" download>⬇ Download APK</a>
+      </div>
+
+      <div class="app-card">
+        <div class="icon">🧩</div>
+        <h3>Phantom for Chrome</h3>
+        <div class="tag">browser bodyguard · extension</div>
+        <p>Not a VPN — a bodyguard. Blocks ads, trackers, and malware, stops WebRTC leaks, and fail-closes your traffic through the proxy.</p>
+        <ul>
+          <li>103-domain NetShield blocklist</li>
+          <li>Fingerprint &amp; geolocation defense</li>
+          <li>Live block counter in popup</li>
+        </ul>
+        <div class="steps">
+          <b style="color:#fff">Install in 30 seconds:</b>
+          <ol>
+            <li>Download the <code>location-changer-extension</code> folder from GitHub</li>
+            <li>Open <code>chrome://extensions</code> → enable <b>Developer mode</b></li>
+            <li><b>Load unpacked</b> → select the folder</li>
+          </ol>
+        </div>
+        <a class="btn btn-ghost" href="https://github.com/prince8076/phantom-GPS/tree/main/location-changer-extension" target="_blank" rel="noopener">Get the extension →</a>
+      </div>
+
+      <div class="app-card">
+        <div class="icon">🖥️</div>
+        <h3>Phantom Hub</h3>
+        <div class="tag">control plane · windows</div>
+        <p>The mission control on your computer: server fleet, connection profiles, rotation cadence, Secure Core routing, and QR pairing for your phone.</p>
+        <ul>
+          <li>Live dashboard &amp; stealth radar</li>
+          <li>Push configs straight to your phone</li>
+          <li>Runs on Node.js — no install wizard</li>
+        </ul>
+        <a class="btn btn-ghost" href="/">Open dashboard →</a>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<!-- HOW IT WORKS -->
+<div class="wrap">
+  <section class="block" id="how">
+    <div class="sec-head">
+      <div class="eyebrow">how it works</div>
+      <h2>Up and running in minutes.</h2>
+    </div>
+    <div class="steps-row">
+      <div class="step">
+        <div class="num">1</div>
+        <h4>Start the hub</h4>
+        <p>On your computer: <code>cd desktop-app</code> → <code>npm install</code> → <code>npm start</code>. Open <code>http://localhost:3300</code>.</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h4>Connect your devices</h4>
+        <p>Install the APK on your phone, load the extension in Chrome. Scan the dashboard QR to pair — configs push automatically.</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h4>Take control</h4>
+        <p>Pick a server, set your shields, and connect. Add your own WireGuard servers anytime via the server contract.</p>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FAQ -->
+<div class="wrap">
+  <section class="block" id="faq">
+    <div class="sec-head">
+      <div class="eyebrow">faq</div>
+      <h2>Questions, answered.</h2>
+    </div>
+    <div class="faq">
+      <div class="faq-item">
+        <button class="faq-q">Is Phantom free? <span class="chev">▾</span></button>
+        <div class="faq-a"><p>Yes. Phantom is self-hosted software — there are no accounts, subscriptions, or paywalls. Your only cost is whatever you pay for your own server, if you choose to rent one.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Do I need my own VPN server? <span class="chev">▾</span></button>
+        <div class="faq-a"><p>For real tunneling, yes — Phantom is a client platform, not a VPN provider. Any WireGuard server works. The dashboard documents the exact server contract (<code>SERVER_CONTRACT.md</code>) so you can wire up your own in an afternoon.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Is the Chrome extension a VPN? <span class="chev">▾</span></button>
+        <div class="faq-a"><p>No — browsers can't run VPN tunnels. The extension is a bodyguard: it blocks ads, trackers, and malware, prevents WebRTC leaks, and fail-closes traffic through your proxy. Pair it with the Android or desktop tunnel for full protection.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">What protocol does it use? <span class="chev">▾</span></button>
+        <div class="faq-a"><p>WireGuard, via the open-source wireguard-android tunnel library, with Smart fallback ordering (UDP → TCP → TLS) for restrictive networks.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Does it block ads and malware? <span class="chev">▾</span></button>
+        <div class="faq-a"><p>Yes — NetShield works on three layers: the extension blocks 103 ad/tracker/malware domains, Android filters at the DNS level, and the dashboard controls the policy.</p></div>
+      </div>
+      <div class="faq-item">
+        <button class="faq-q">Is my data logged anywhere? <span class="chev">▾</span></button>
+        <div class="faq-a"><p>There's no company to log it. The hub stores your pushed config in memory only, and everything runs on machines you control. Your server's logging policy is yours to set.</p></div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- FINAL CTA -->
+<div class="wrap">
+  <div class="cta-band">
+    <h2>Your internet, on your terms.</h2>
+    <p>Download the apps, start the hub, and take back control — tonight.</p>
+    <a class="btn btn-primary" href="#apps">Get Phantom →</a>
+  </div>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <p>phantom vpn · self-hosted privacy · built in the open</p>
+    <div class="foot-links">
+      <a href="/">Dashboard</a>
+      <a href="https://github.com/prince8076/phantom-GPS" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://github.com/prince8076/phantom-GPS/blob/main/PRD.md" target="_blank" rel="noopener">Docs</a>
+      <a href="https://github.com/prince8076/phantom-GPS/blob/main/SERVER_CONTRACT.md" target="_blank" rel="noopener">Server contract</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  document.querySelectorAll('.faq-item').forEach(item => {
+    item.querySelector('.faq-q').addEventListener('click', () => {
+      const open = item.classList.contains('open');
+      document.querySelectorAll('.faq-item.open').forEach(o => {
+        o.classList.remove('open');
+        o.querySelector('.faq-a').style.maxHeight = null;
+      });
+      if (!open) {
+        item.classList.add('open');
+        const a = item.querySelector('.faq-a');
+        a.style.maxHeight = a.scrollHeight + 'px';
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
