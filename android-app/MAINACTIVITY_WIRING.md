@@ -1,5 +1,32 @@
 # MainActivity wiring — Phantom VPN core
 
+## 0. Recommended: use VpnConnector (new)
+
+`VpnConnector.prepareConfig(context, hubBaseUrl, callback)` does the whole
+fetch → resolve → credentials flow on a background thread and returns a
+complete `VpnConfig` on the UI thread:
+
+```java
+import ai.omnirush.chameleon.vpn.VpnConnector;
+import ai.omnirush.chameleon.vpn.VpnConfig;
+
+VpnConnector.prepareConfig(this, "http://192.168.1.5:3300",
+    new VpnConnector.PrepareCallback() {
+        @Override public void onReady(VpnConfig config) {
+            requestVpnConsentAndConnect(config); // section 1 below
+        }
+        @Override public void onError(String message) {
+            Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show();
+        }
+    });
+```
+
+Pass `null` as the hub URL to reuse the last-paired hub from `HubSettings`
+(set it during QR pairing via `HubSettings.setHubUrl(this, url)`).
+The pieces behind it: `HubClient` (hub HTTP + `CredentialProvider`),
+`HubSettings` (persisted hub URL). The manual steps below remain valid if you
+prefer to wire the flow yourself.
+
 Concise integration notes. The 21 KB `MainActivity.java` is **not** rewritten;
 add the pieces below where indicated. All names refer to the new
 `ai.omnirush.chameleon.vpn` package in this draft.
