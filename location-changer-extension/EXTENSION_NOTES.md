@@ -127,3 +127,13 @@ That is expected and honest — the toggles do exactly what they say.
 - `popup.html` / `popup.js` — **updated** with Leak Protection section
 - `content.js` — unchanged from repo
 - `EXTENSION_NOTES.md` — this file
+
+## Icons (brand mark + toolbar)
+
+- `icons/icon16.png`, `icons/icon48.png`, `icons/icon128.png` — Chrome toolbar/listing icons.
+  Generated from geometric primitives (amethyst hex-shield + cyan bolt on jet black),
+  **not** committed as binaries: regenerate locally after `git pull` with
+  `python3 icons/make-icons.py` (needs Pillow: `pip install pillow`).
+- `icons/make-icons.py` — the generator; edit the HEXAGON/BOLT coordinates there to tweak the mark.
+- Canonical web sprite: `../desktop-app/public/icons.svg` (15 symbols, Lucide-style
+  2px stroke, round caps/joins). Brand lockups: `../desktop-app/public/brand/logo.svg`.

@@ -1,0 +1,9 @@
+<!-- PHANTOM brand mark — flat geometric glyph: amethyst hex-shield + cyan bolt on jet black.
+     No gradients, no 3D, no generic AI tropes. -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#0a0a10"/>
+  <rect x="2.5" y="2.5" width="59" height="59" rx="13.5" fill="none" stroke="#2a2440"/>
+  <polygon points="53,32 42.5,50.2 21.5,50.2 11,32 21.5,13.8 42.5,13.8"
+           fill="none" stroke="#8b5cf6" stroke-width="4.5" stroke-linejoin="round"/>
+  <path d="M37 15 L25 36 h8 L29 49 L43 30 h-8 Z" fill="#00e5ff"/>
+</svg>

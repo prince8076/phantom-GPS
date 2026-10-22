@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>phantom · vpn client</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -161,36 +162,19 @@
 </head>
 <body class="th-dotgrid">
 
-  <!-- icon sprite: 24px stroke icons, currentColor -->
-  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
-    <symbol id="i-bolt" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></symbol>
-    <symbol id="i-power" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 6.3a8 8 0 1 0 11.4 0"/></symbol>
-    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z"/></symbol>
-    <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18M12 3c-3 3.5-3 14 0 18"/></symbol>
-    <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
-    <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></symbol>
-    <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8h9M17 8h3M4 16h3M11 16h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></symbol>
-    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol>
-    <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></symbol>
-    <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></symbol>
-    <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></symbol>
-    <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol>
-    <symbol id="i-brief" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
-  </svg>
-
   <div class="vc-shell">
     <!-- ============ fixed left sidebar ============ -->
     <aside class="vc-side" aria-label="Primary">
       <div class="vc-brand">
-        <span class="vc-brand-mark"><svg><use href="#i-bolt"/></svg></span>
+        <span class="vc-brand-mark"><svg><use href="icons.svg#i-bolt"/></svg></span>
         <div><b>PHANTOM</b><small>STEALTH NETWORK</small></div>
       </div>
       <nav class="vc-nav">
-        <button class="th-navitem th-navitem-on"><svg><use href="#i-home"/></svg><span class="lbl">Overview</span></button>
-        <button class="th-navitem"><svg><use href="#i-globe"/></svg><span class="lbl">Countries</span></button>
-        <button class="th-navitem"><svg><use href="#i-layers"/></svg><span class="lbl">Profiles</span></button>
-        <button class="th-navitem"><svg><use href="#i-phone"/></svg><span class="lbl">Phone Sync</span></button>
-        <button class="th-navitem"><svg><use href="#i-sliders"/></svg><span class="lbl">Settings</span></button>
+        <button class="th-navitem th-navitem-on"><svg><use href="icons.svg#i-home"/></svg><span class="lbl">Overview</span></button>
+        <button class="th-navitem"><svg><use href="icons.svg#i-globe"/></svg><span class="lbl">Countries</span></button>
+        <button class="th-navitem"><svg><use href="icons.svg#i-layers"/></svg><span class="lbl">Profiles</span></button>
+        <button class="th-navitem"><svg><use href="icons.svg#i-phone"/></svg><span class="lbl">Phone Sync</span></button>
+        <button class="th-navitem"><svg><use href="icons.svg#i-sliders"/></svg><span class="lbl">Settings</span></button>
       </nav>
       <div class="vc-side-foot">
         <div class="th-row">
@@ -208,10 +192,10 @@
         <span class="th-chip" id="statusPill"><span class="th-pulse idle" id="statusDot"></span><span id="statusPillTxt">Unprotected</span></span>
         <div class="vc-top-right">
           <button class="th-chip" id="nsChip" aria-pressed="false" title="Toggle NetShield">
-            <svg><use href="#i-shield"/></svg><span id="nsLabel">NetShield off</span>
+            <svg><use href="icons.svg#i-shield"/></svg><span id="nsLabel">NetShield off</span>
           </button>
           <span class="th-mono th-dim" style="font-size:12px" id="hubMs" title="Hub round-trip">— ms</span>
-          <button class="vc-iconbtn" title="Settings" aria-label="Settings"><svg><use href="#i-sliders"/></svg></button>
+          <button class="vc-iconbtn" title="Settings" aria-label="Settings"><svg><use href="icons.svg#i-sliders"/></svg></button>
         </div>
       </header>
 
@@ -221,7 +205,7 @@
         <section class="th-card vc-hero" id="heroCard" aria-label="Connection status">
           <div class="vc-hero-left">
             <button class="th-power" id="powerBtn" aria-pressed="false" aria-label="Connect or disconnect">
-              <svg><use href="#i-power"/></svg>
+              <svg><use href="icons.svg#i-power"/></svg>
             </button>
             <div class="vc-status">
               <h2 id="statusTitle">You are exposed</h2>
@@ -334,9 +318,9 @@
         const b = document.createElement("button");
         b.className = "vc-profile";
         b.innerHTML =
-          '<span class="vc-profile-ic"><svg><use href="#' + p.icon + '"/></svg></span>' +
+          '<span class="vc-profile-ic"><svg><use href="icons.svg#' + p.icon + '"/></svg></span>' +
           "<span><b>" + p.name + "</b><small>" + p.sub + "</small></span>" +
-          '<svg><use href="#i-chev"/></svg>';
+          '<svg><use href="icons.svg#i-chev"/></svg>';
         b.addEventListener("click", () => {
           const target = SERVERS.find((s) => p.sub.includes(s.code)) || SERVERS[0];
           connect(target);

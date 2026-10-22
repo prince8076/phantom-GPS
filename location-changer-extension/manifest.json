@@ -1,1 +1,61 @@
-{"action":{"default_popup":"popup.html"},"background":{"service_worker":"background.js"},"content_scripts":[{"all_frames":true,"js":["content.js"],"matches":["*://*.google.com/*","*://*.google.co.in/*","*://*/*"],"run_at":"document_start","world":"MAIN"}],"declarative_net_request":{"rule_resources":[{"enabled":true,"id":"ads_trackers","path":"rules_ads.json"},{"enabled":true,"id":"malware_unwanted","path":"rules_malware.json"}]},"description":"Spoofs GPS location and browser fingerprint every 5 minutes, with WebRTC leak prevention, speculative-connection blocking, NetShield ad/tracker/malware domain blocking, and optional routing through the local Smart Proxy Engine.","host_permissions":["<all_urls>"],"manifest_version":3,"name":"OmniRush 5-Min Location & IP Chameleon","permissions":["storage","privacy","proxy","declarativeNetRequest","declarativeNetRequestFeedback"],"version":"2.3"}
+{
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "all_frames": true,
+      "js": [
+        "content.js"
+      ],
+      "matches": [
+        "*://*.google.com/*",
+        "*://*.google.co.in/*",
+        "*://*/*"
+      ],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "enabled": true,
+        "id": "ads_trackers",
+        "path": "rules_ads.json"
+      },
+      {
+        "enabled": true,
+        "id": "malware_unwanted",
+        "path": "rules_malware.json"
+      }
+    ]
+  },
+  "description": "Spoofs GPS location and browser fingerprint every 5 minutes, with WebRTC leak prevention, speculative-connection blocking, NetShield ad/tracker/malware domain blocking, and optional routing through the local Smart Proxy Engine.",
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "manifest_version": 3,
+  "name": "OmniRush 5-Min Location & IP Chameleon",
+  "permissions": [
+    "storage",
+    "privacy",
+    "proxy",
+    "declarativeNetRequest",
+    "declarativeNetRequestFeedback"
+  ],
+  "version": "2.3",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}

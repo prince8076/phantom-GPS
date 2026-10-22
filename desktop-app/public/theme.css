@@ -469,3 +469,36 @@ a:hover { text-decoration: underline; }
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================== icon system ==============================
+   One family: Lucide-style (24 viewBox, 2px stroke, round caps/joins).
+   Glyphs live in icons.svg; size them per platform — never mix families.
+   web:       18px glyph boxed in a 32×32 container with hover state
+   extension: 16px / 20px glyph, dense, no container
+   android:   24px glyph inside a 48dp touch target                         */
+
+.ic-ext    { width: 16px; height: 16px; flex: none; }
+.ic-ext-lg { width: 20px; height: 20px; flex: none; }
+.ic-and    { width: 24px; height: 24px; flex: none; }
+
+.ic-box-web {
+  width: 32px; height: 32px; flex: none;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color var(--t-fast) var(--ease-out),
+              border-color var(--t-fast) var(--ease-out),
+              box-shadow var(--t-fast) var(--ease-out),
+              transform var(--t-fast) var(--ease-snap);
+}
+.ic-box-web svg { width: 18px; height: 18px; }
+.ic-box-web:hover {
+  color: var(--accent-light);
+  border-color: var(--border-glow);
+  box-shadow: var(--glow-amethyst);
+  transform: translateY(-1px);
+}
+.ic-box-web:active { transform: scale(0.92); }
