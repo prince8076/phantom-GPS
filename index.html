@@ -68,6 +68,70 @@
         </div>
       </div>
 
+      <div class="onboarding-hint" id="onboarding-hint" hidden>
+        <div>
+          <strong>👋 First time here?</strong>
+          <p>This is your VPN control plane: connect to a server, tune protocol and shields, then push the config to your phone. Fleet load and latency are simulated seed values until you wire a live feed.</p>
+        </div>
+        <button class="primary-button" id="onboarding-dismiss">Got it</button>
+      </div>
+
+      <div class="content-grid vpn-hero-grid">
+        <section class="panel vpn-connect-panel">
+          <div class="panel-header">
+            <div>
+              <h2>VPN connection</h2>
+              <p>Your tunnel, at a glance</p>
+            </div>
+            <span class="vpn-status-pill disconnected" id="vpn-status-pill">● Disconnected</span>
+          </div>
+          <div class="vpn-hero">
+            <button class="vpn-connect-btn" id="vpn-connect-btn" aria-pressed="false">
+              <span class="vpn-power">⏻</span>
+              <span class="vpn-connect-label" id="vpn-connect-label">Connect</span>
+            </button>
+            <div class="vpn-details">
+              <div class="vpn-detail">
+                <small>SERVER</small>
+                <strong id="vpn-server-name">Not connected</strong>
+                <span class="vpn-detail-sub" id="vpn-server-meta">Choose a server below, then connect</span>
+              </div>
+              <div class="vpn-detail">
+                <small>VIRTUAL IP</small>
+                <strong id="vpn-current-ip">—</strong>
+              </div>
+              <div class="vpn-detail">
+                <small>PROTOCOL</small>
+                <strong id="vpn-current-protocol">Smart</strong>
+              </div>
+              <div class="vpn-detail">
+                <small>SESSION TIME</small>
+                <strong id="vpn-session-time">00:00:00</strong>
+              </div>
+              <div class="vpn-detail">
+                <small>DATA DOWN / UP</small>
+                <strong><span id="vpn-data-down">0 B</span> <span class="dim">/</span> <span id="vpn-data-up">0 B</span></strong>
+              </div>
+            </div>
+          </div>
+          <p class="sim-note">Session timer and transfer counters are simulated in this dashboard build.</p>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Connection profiles</h2>
+              <p>One-tap setups for stealth, streaming, travel</p>
+            </div>
+          </div>
+          <div id="profiles-list" class="profiles-list"></div>
+          <div class="profile-save-row">
+            <input type="text" id="profile-name-input" class="fleet-search" placeholder="Profile name, e.g. Maximum Stealth" aria-label="New profile name" />
+            <button class="primary-button" id="save-profile-btn"><span>＋</span> Save current</button>
+          </div>
+        </section>
+      </div>
+
       <div class="metric-grid">
         <article class="metric-card score-card">
           <div class="metric-top"><span class="metric-label">ROTATION TIMER</span><span class="trend positive" id="shield-status-badge">● Active</span></div>
@@ -131,6 +195,7 @@
               <button class="pool-btn" data-pool="random">Random pool</button>
             </div>
           </div>
+          <p class="sim-note fleet-sim-note">Load and latency are simulated seed values — wire your hub's live feed to replace them.</p>
           <div class="fleet-list" id="fleet-list"></div>
         </section>
 
@@ -150,12 +215,6 @@
             [00:30] Ready for 5-minute automated rotation cycle.
           </div>
           <span class="link-button" id="trigger-geo-test-btn" style="cursor:pointer;">Test Browser Geo API <span>→</span></span>
-          <div class="panel-subhead">Connection profiles</div>
-          <div id="profiles-list" class="profiles-list"></div>
-          <div class="profile-save-row">
-            <input type="text" id="profile-name-input" class="fleet-search" placeholder="Profile name, e.g. Maximum Stealth" aria-label="New profile name" />
-            <button class="primary-button" id="save-profile-btn"><span>＋</span> Save current</button>
-          </div>
         </section>
       </div>
 
@@ -241,11 +300,24 @@
             </div>
             <span class="sync-pill" id="push-status">● Not pushed</span>
           </div>
-          <div class="hub-row">
-            <input type="text" id="hub-url-input" class="fleet-search" value="http://127.0.0.1:3300" aria-label="Control hub URL" />
-            <button class="primary-button" id="push-phone-btn-2"><span>📲</span> Push config to phone</button>
+          <div class="qr-grid">
+            <div class="qr-main">
+              <div class="hub-row">
+                <input type="text" id="hub-url-input" class="fleet-search" value="http://127.0.0.1:3300" aria-label="Control hub URL" />
+                <button class="primary-button" id="push-phone-btn-2"><span>📲</span> Push config to phone</button>
+              </div>
+              <pre class="payload-preview" id="payload-preview">{}</pre>
+            </div>
+            <div class="qr-box">
+              <div class="qr-code" id="qr-code-box" role="img" aria-label="Pairing QR code"></div>
+              <div class="pairing-row">
+                <small>PAIRING TOKEN</small>
+                <code id="pairing-token">…</code>
+              </div>
+              <button class="link-button" id="pairing-regen-btn">Regenerate token <span>→</span></button>
+              <p class="sim-note">Scan with the Android app to pair — encodes the hub URL + token.</p>
+            </div>
           </div>
-          <pre class="payload-preview" id="payload-preview">{}</pre>
         </section>
 
         <section class="panel quick-panel">
@@ -323,6 +395,7 @@
     </template>
 
     <div class="toast" id="toast" role="status"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

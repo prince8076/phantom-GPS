@@ -371,23 +371,41 @@ function fmtCadenceLong() {
   return mins === 1 ? '1 min' : mins + ' mins';
 }
 
+function renderFleetRow(n) {
+  const active = vpnConfig.serverMode === 'manual' && vpnConfig.serverId === n.id;
+  const loadClass = n.load >= 65 ? 'high' : (n.load >= 40 ? 'mid' : 'low');
+  return '<button class="fleet-row' + (active ? ' active' : '') + '" data-node="' + n.id + '">' +
+    '<span class="fleet-flag">' + countryFlag(n.country) + '</span>' +
+    '<span class="fleet-meta"><strong>' + escapeHtml(n.name) + '</strong><small>' + escapeHtml(n.ip) + ' · ' + n.latencyMs + ' ms</small></span>' +
+    '<span class="load-wrap"><span class="load-bar"><i class="' + loadClass + '" style="width:' + n.load + '%"></i></span><small>' + n.load + '%</small></span>' +
+    '</button>';
+}
+
 function renderFleetList() {
   const list = document.querySelector('#fleet-list');
   if (!list) return;
   const query = ((document.querySelector('#fleet-search') || {}).value || '').trim().toLowerCase();
-  const rows = proxyNodes
-    .filter((n) => !query || n.name.toLowerCase().includes(query) || n.country.toLowerCase().includes(query))
-    .map((n) => {
-      const active = vpnConfig.serverMode === 'manual' && vpnConfig.serverId === n.id;
-      const loadClass = n.load >= 65 ? 'high' : (n.load >= 40 ? 'mid' : 'low');
-      return '<button class="fleet-row' + (active ? ' active' : '') + '" data-node="' + n.id + '">' +
-        '<span class="fleet-flag">' + countryFlag(n.country) + '</span>' +
-        '<span class="fleet-meta"><strong>' + n.name + '</strong><small>' + n.ip + ' · ' + n.latencyMs + ' ms</small></span>' +
-        '<span class="load-wrap"><span class="load-bar"><i class="' + loadClass + '" style="width:' + n.load + '%"></i></span><small>' + n.load + '%</small></span>' +
-        '</button>';
-    })
-    .join('');
-  list.innerHTML = rows || '<div class="fleet-empty">No servers match your search.</div>';
+  const nodes = proxyNodes.filter((n) =>
+    !query || n.name.toLowerCase().includes(query) || n.country.toLowerCase().includes(query)
+  );
+  // Group by country, preserving fleet order.
+  const groups = [];
+  const byCountry = {};
+  nodes.forEach((n) => {
+    if (!byCountry[n.country]) {
+      byCountry[n.country] = [];
+      groups.push([n.country, byCountry[n.country]]);
+    }
+    byCountry[n.country].push(n);
+  });
+  const html = groups.map(([country, arr]) =>
+    '<div class="fleet-group"><span class="fleet-group-flag">' + countryFlag(country) + '</span>' +
+    '<strong>' + escapeHtml(country) + '</strong>' +
+    '<small>' + arr.length + (arr.length === 1 ? ' node' : ' nodes') + '</small></div>' +
+    arr.map(renderFleetRow).join('')
+  ).join('');
+  list.innerHTML = html ||
+    '<div class="fleet-empty">No servers match your search.<br><small>Try a different city or country.</small></div>';
   const count = document.querySelector('#fleet-count');
   if (count) count.textContent = proxyNodes.length + ' nodes';
 }
@@ -529,6 +547,189 @@ function refreshAllControls() {
   if (hubInput) hubInput.value = getHubUrl();
   updatePayloadPreview();
   syncConfigSummary();
+  updateVpnHero();
+}
+
+/* ---------- VPN session hero (dashboard simulation) ---------- */
+const ONBOARDED_KEY = 'phantom.vpn.onboarded.v1';
+const PAIRING_KEY = 'phantom.vpn.pairing.v1';
+let vpnConnected = false;
+let vpnSessionStart = 0;
+let vpnSessionTimer = null;
+let vpnDataDown = 0;
+let vpnDataUp = 0;
+
+function protocolDisplayName(p) {
+  return { 'smart': 'Smart', 'wireguard-udp': 'WireGuard UDP', 'wireguard-tcp': 'WireGuard TCP', 'wireguard-tls': 'WireGuard TLS' }[p] || p;
+}
+
+function fmtSessionTime(ms) {
+  const s = Math.floor(ms / 1000);
+  const h = String(Math.floor(s / 3600)).padStart(2, '0');
+  const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+  const sec = String(s % 60).padStart(2, '0');
+  return h + ':' + m + ':' + sec;
+}
+
+function fmtBytes(b) {
+  if (b < 1024) return Math.round(b) + ' B';
+  if (b < 1024 * 1024) return (b / 1024).toFixed(1) + ' KB';
+  if (b < 1024 * 1024 * 1024) return (b / (1024 * 1024)).toFixed(1) + ' MB';
+  return (b / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+}
+
+function resolveTargetNode() {
+  if (vpnConfig.serverMode === 'fastest') {
+    const n = pickFastestNode();
+    vpnConfig.serverId = n.id;
+    return n;
+  }
+  if (vpnConfig.serverMode === 'random') {
+    const pool = proxyNodes; // contract v1: random pool = whole fleet
+    const n = pool[Math.floor(Math.random() * pool.length)];
+    vpnConfig.serverId = n.id;
+    return n;
+  }
+  return proxyNodes.find((n) => n.id === vpnConfig.serverId) || proxyNodes[0];
+}
+
+function updateVpnHero() {
+  const pill = document.querySelector('#vpn-status-pill');
+  const btn = document.querySelector('#vpn-connect-btn');
+  const label = document.querySelector('#vpn-connect-label');
+  const nameEl = document.querySelector('#vpn-server-name');
+  const metaEl = document.querySelector('#vpn-server-meta');
+  const ipEl = document.querySelector('#vpn-current-ip');
+  const protoEl = document.querySelector('#vpn-current-protocol');
+  if (protoEl) protoEl.textContent = protocolDisplayName(vpnConfig.protocol);
+  if (!pill || !btn) return;
+  if (vpnConnected) {
+    pill.textContent = '● Connected';
+    pill.className = 'vpn-status-pill connected';
+    btn.classList.add('connected');
+    btn.setAttribute('aria-pressed', 'true');
+    if (label) label.textContent = 'Disconnect';
+  } else {
+    pill.textContent = '● Disconnected';
+    pill.className = 'vpn-status-pill disconnected';
+    btn.classList.remove('connected');
+    btn.setAttribute('aria-pressed', 'false');
+    if (label) label.textContent = 'Connect';
+    if (nameEl) nameEl.textContent = 'Not connected';
+    if (metaEl) metaEl.textContent = 'Choose a server below, then connect';
+    if (ipEl) ipEl.textContent = '—';
+  }
+}
+
+function tickVpnSession() {
+  const timeEl = document.querySelector('#vpn-session-time');
+  const downEl = document.querySelector('#vpn-data-down');
+  const upEl = document.querySelector('#vpn-data-up');
+  // Simulated transfer: the dashboard has no real tunnel, so counters are illustrative.
+  vpnDataDown += 400000 + Math.random() * 2500000;
+  vpnDataUp += 60000 + Math.random() * 500000;
+  if (timeEl) timeEl.textContent = fmtSessionTime(Date.now() - vpnSessionStart);
+  if (downEl) downEl.textContent = fmtBytes(vpnDataDown);
+  if (upEl) upEl.textContent = fmtBytes(vpnDataUp);
+}
+
+function startSessionTicker() {
+  stopSessionTicker();
+  tickVpnSession();
+  vpnSessionTimer = setInterval(tickVpnSession, 1000);
+}
+
+function stopSessionTicker() {
+  if (vpnSessionTimer) {
+    clearInterval(vpnSessionTimer);
+    vpnSessionTimer = null;
+  }
+}
+
+function connectVpn() {
+  const node = resolveTargetNode();
+  saveVpnConfig();
+  vpnConnected = true;
+  vpnSessionStart = Date.now();
+  vpnDataDown = 0;
+  vpnDataUp = 0;
+  applyProxyNode(node, 'VPN connected');
+  const nameEl = document.querySelector('#vpn-server-name');
+  const metaEl = document.querySelector('#vpn-server-meta');
+  const ipEl = document.querySelector('#vpn-current-ip');
+  if (nameEl) nameEl.textContent = node.name;
+  if (metaEl) metaEl.textContent = vpnConfig.serverMode.charAt(0).toUpperCase() + vpnConfig.serverMode.slice(1) +
+    ' selection · ' + node.latencyMs + ' ms · ' + node.load + '% load';
+  if (ipEl) ipEl.textContent = node.ip;
+  startSessionTicker();
+  updateVpnHero();
+  renderFleetList();
+  showToast('🔒 VPN connected via ' + node.name + ' (simulated session).');
+}
+
+function disconnectVpn() {
+  vpnConnected = false;
+  stopSessionTicker();
+  updateVpnHero();
+  showToast('VPN disconnected. Session counters stopped.');
+}
+
+/* ---------- Pairing QR + onboarding ---------- */
+function getPairingToken() {
+  try {
+    let t = localStorage.getItem(PAIRING_KEY);
+    if (!t) {
+      t = 'pair-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8);
+      localStorage.setItem(PAIRING_KEY, t);
+    }
+    return t;
+  } catch (e) {
+    return 'pair-local';
+  }
+}
+
+function regeneratePairingToken() {
+  try {
+    localStorage.setItem(PAIRING_KEY,
+      'pair-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 8));
+  } catch (e) { /* storage unavailable */ }
+}
+
+function pairingPayload() {
+  return JSON.stringify({ contract: 'phantom-vpn-config', version: 1, hub: getHubUrl(), token: getPairingToken() });
+}
+
+function renderQrCode() {
+  const box = document.querySelector('#qr-code-box');
+  const tokenEl = document.querySelector('#pairing-token');
+  if (!box) return;
+  const text = pairingPayload();
+  if (tokenEl) tokenEl.textContent = getPairingToken();
+  box.innerHTML = '';
+  if (window.QRCode) {
+    try {
+      new QRCode(box, { text: text, width: 168, height: 168, correctLevel: QRCode.CorrectLevel.M });
+    } catch (e) {
+      box.innerHTML = '<div class="qr-fallback">Could not render QR code.</div>';
+    }
+  } else {
+    box.innerHTML = '<div class="qr-fallback">QR library failed to load.<br>Pair manually with:<br><code>' +
+      escapeHtml(text) + '</code></div>';
+  }
+}
+
+function maybeShowOnboarding() {
+  let seen = false;
+  try { seen = !!localStorage.getItem(ONBOARDED_KEY); } catch (e) { /* ignore */ }
+  const hint = document.querySelector('#onboarding-hint');
+  if (hint && !seen) hint.hidden = false;
+  const dismiss = document.querySelector('#onboarding-dismiss');
+  if (dismiss && hint) {
+    dismiss.addEventListener('click', () => {
+      try { localStorage.setItem(ONBOARDED_KEY, '1'); } catch (e) { /* ignore */ }
+      hint.hidden = true;
+    });
+  }
 }
 
 /* ---------- Overview (unchanged behavior) ---------- */
@@ -561,6 +762,7 @@ function setView(view) {
     appView.innerHTML = overviewHtml;
     bindOverviewEvents();
     stopGeoIpTimer();
+    stopSessionTicker();
   } else if (view === 'geoip') {
     const template = document.querySelector('#geoip-view-template');
     appView.innerHTML = template ? template.innerHTML : '<div class="page-heading"><h1>GeoIP Chameleon</h1></div>';
@@ -581,6 +783,7 @@ function setView(view) {
       </div>
     `;
     stopGeoIpTimer();
+    stopSessionTicker();
     showToast(`${label} workspace is ready for your next review.`);
   }
 
@@ -954,6 +1157,7 @@ function initGeoIpWorkspace() {
   if (hubInput) {
     hubInput.addEventListener('change', () => {
       setHubUrl(hubInput.value.trim() || 'http://127.0.0.1:3300');
+      renderQrCode();
       showToast('Control hub URL updated.');
     });
   }
@@ -961,6 +1165,19 @@ function initGeoIpWorkspace() {
   if (pushBtn) pushBtn.addEventListener('click', pushConfigToPhone);
   const pushBtn2 = document.querySelector('#push-phone-btn-2');
   if (pushBtn2) pushBtn2.addEventListener('click', pushConfigToPhone);
+
+  /* ----- VPN connection hero ----- */
+  const vpnBtn = document.querySelector('#vpn-connect-btn');
+  if (vpnBtn) vpnBtn.addEventListener('click', () => (vpnConnected ? disconnectVpn() : connectVpn()));
+  if (vpnConnected) startSessionTicker();
+  maybeShowOnboarding();
+  renderQrCode();
+  const regenBtn = document.querySelector('#pairing-regen-btn');
+  if (regenBtn) regenBtn.addEventListener('click', () => {
+    regeneratePairingToken();
+    renderQrCode();
+    showToast('New pairing token generated.');
+  });
 
   updatePayloadPreview();
   syncConfigSummary();

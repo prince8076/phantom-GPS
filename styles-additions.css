@@ -263,3 +263,155 @@
   .shield-row { flex-direction: column; align-items: flex-start; }
   .hub-row, .tag-add-row, .profile-save-row { flex-direction: column; }
 }
+
+/* ----- Onboarding hint ----- */
+.onboarding-hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: linear-gradient(135deg, #102a34 0%, #143844 100%);
+  border: 1px solid #2b535a;
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 20px;
+  color: #d9f5ea;
+}
+.onboarding-hint[hidden] { display: none; }
+.onboarding-hint strong { display: block; font-size: 13px; color: var(--mint); margin-bottom: 4px; }
+.onboarding-hint p { font-size: 12px; color: #a9c6c2; margin: 0; line-height: 1.55; }
+.onboarding-hint .primary-button { white-space: nowrap; }
+
+/* ----- VPN connection hero ----- */
+.vpn-hero-grid { grid-template-columns: 1.6fr 1fr; }
+.vpn-connect-panel { position: relative; overflow: hidden; }
+.vpn-status-pill {
+  font: 600 11px 'DM Mono', monospace;
+  border-radius: 12px;
+  padding: 7px 13px;
+  white-space: nowrap;
+}
+.vpn-status-pill.disconnected { background: #f1f4f4; color: #8a9a9b; border: 1px solid #e2e8e8; }
+.vpn-status-pill.connected { background: #eaf8f3; color: var(--mint-dark); border: 1px solid var(--mint); }
+.vpn-hero {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-top: 18px;
+}
+.vpn-connect-btn {
+  flex-shrink: 0;
+  width: 128px;
+  height: 128px;
+  border-radius: 50%;
+  border: 2px solid var(--mint);
+  background: radial-gradient(circle at 50% 35%, #eaf8f3 0%, #d3f0e4 100%);
+  color: var(--mint-dark);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  box-shadow: 0 0 0 6px rgba(92, 225, 177, .12), 0 8px 24px rgba(16, 42, 52, .10);
+  transition: transform .15s ease, box-shadow .15s ease, background .2s ease;
+}
+.vpn-connect-btn:hover { transform: scale(1.04); box-shadow: 0 0 0 8px rgba(92, 225, 177, .16), 0 10px 28px rgba(16, 42, 52, .14); }
+.vpn-connect-btn:active { transform: scale(.98); }
+.vpn-connect-btn .vpn-power { font-size: 30px; line-height: 1; }
+.vpn-connect-btn .vpn-connect-label { font: 700 12px inherit; letter-spacing: .5px; text-transform: uppercase; }
+.vpn-connect-btn.connected {
+  border-color: #e56b60;
+  background: radial-gradient(circle at 50% 35%, #fdeeed 0%, #f9dcd8 100%);
+  color: #b4433a;
+  box-shadow: 0 0 0 6px rgba(229, 107, 96, .12), 0 8px 24px rgba(16, 42, 52, .10);
+}
+.vpn-details {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px 20px;
+}
+.vpn-detail small {
+  display: block;
+  font: 600 9px 'DM Mono', monospace;
+  letter-spacing: 1px;
+  color: #8a9a9b;
+  margin-bottom: 4px;
+}
+.vpn-detail strong { display: block; font-size: 14px; color: #31464b; }
+.vpn-detail .vpn-detail-sub { display: block; font-size: 10px; color: #99a5a5; margin-top: 3px; }
+.vpn-detail .dim { color: #a4b0b0; font-weight: 400; }
+.sim-note {
+  margin: 16px 0 0;
+  font-size: 10px;
+  color: #a4b0b0;
+  font-style: italic;
+}
+.fleet-sim-note { margin: 10px 0 0; }
+
+/* ----- Fleet country groups ----- */
+.fleet-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px 6px;
+  background: #f8fbfa;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.fleet-group-flag { font-size: 15px; }
+.fleet-group strong { font-size: 11px; color: #31464b; letter-spacing: .4px; }
+.fleet-group small { margin-left: auto; font: 500 10px 'DM Mono', monospace; color: #99a5a5; }
+
+/* ----- Phone sync QR ----- */
+.qr-grid {
+  display: grid;
+  grid-template-columns: 1.6fr 1fr;
+  gap: 24px;
+  margin-top: 14px;
+}
+.qr-main { min-width: 0; }
+.qr-main .hub-row { margin-top: 0; }
+.qr-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #eef2f1;
+  border-radius: 10px;
+  padding: 18px 14px;
+  background: #fbfdfc;
+  text-align: center;
+}
+.qr-code {
+  width: 168px;
+  height: 168px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #fff;
+  border: 1px solid #eef2f1;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.qr-code img, .qr-code canvas { display: block; }
+.qr-fallback { font-size: 10px; color: #8a9a9b; padding: 10px; word-break: break-all; }
+.qr-fallback code { font-family: 'DM Mono', monospace; font-size: 9px; }
+.pairing-row { display: flex; flex-direction: column; gap: 4px; align-items: center; }
+.pairing-row small { font: 600 9px 'DM Mono', monospace; letter-spacing: 1px; color: #8a9a9b; }
+.pairing-row code {
+  font: 600 11px 'DM Mono', monospace;
+  color: var(--mint-dark);
+  background: #eaf8f3;
+  border-radius: 6px;
+  padding: 5px 10px;
+  word-break: break-all;
+}
+.qr-box .sim-note { margin-top: 2px; }
+
+@media (max-width: 900px) {
+  .vpn-hero-grid, .qr-grid { grid-template-columns: 1fr; }
+  .vpn-hero { flex-direction: column; align-items: flex-start; }
+}
