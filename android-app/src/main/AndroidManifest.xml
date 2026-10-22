@@ -6,6 +6,7 @@
 
     <uses-sdk android:minSdkVersion="26" android:targetSdkVersion="34" />
 
+    <!-- existing -->
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
@@ -13,6 +14,14 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+
+    <!-- VPN core additions -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
+    <!-- Needed to list installed apps for the per-app split-tunnel picker. -->
+    <uses-permission android:name="android.permission.QUERY_ALL_PACKAGES" />
 
     <application
         android:label="Phantom GPS"
@@ -32,6 +41,56 @@
             android:name=".MockLocationService"
             android:foregroundServiceType="location"
             android:exported="true" />
+
+        <!-- Phantom VPN service: owns the connection lifecycle. -->
+        <service
+            android:name=".vpn.PhantomVpnService"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:foregroundServiceType="systemExempted"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.net.VpnService" />
+            </intent-filter>
+        </service>
+
+        <!-- Inner VpnService of the wireguard-android GoBackend.
+             Required by the com.wireguard.android:tunnel artifact: the
+             backend brings the TUN interface up through this service. -->
+        <service
+            android:name="com.wireguard.android.backend.GoBackend$VpnService"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:exported="false" />
+
+        <!-- Quick Settings tile: connect / disconnect. -->
+        <service
+            android:name=".vpn.PhantomTileService"
+            android:icon="@mipmap/ic_launcher"
+            android:label="Phantom VPN"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+        </service>
+
+        <!-- Notification actions (Disconnect). -->
+        <receiver
+            android:name=".vpn.VpnActionReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="ai.omnirush.chameleon.vpn.NOTIF_DISCONNECT" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Auto-reconnect on boot / package replaced. -->
+        <receiver
+            android:name=".vpn.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+            </intent-filter>
+        </receiver>
     </application>
 </manifest>
-
