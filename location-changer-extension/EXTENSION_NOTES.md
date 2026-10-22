@@ -1,4 +1,24 @@
-# OmniRush Chameleon — Extension Hardening Notes (v2.2, "Browser Bodyguard")
+# OmniRush Chameleon — Extension Hardening Notes (v2.3, "Browser Bodyguard + NetShield")
+
+## What changed in v2.3
+
+Adds a **NetShield** layer on top of v2.2's Leak Protection, using
+`chrome.declarativeNetRequest` static rulesets:
+
+1. **Block ads & trackers** (`rules_ads.json`, 91 rules) — blocks requests to
+   major ad networks, ad exchanges, analytics, session-replay and data-broker
+   domains before they load. Side effect the user asked for: pages load
+   faster with less to download.
+2. **Block malware & unwanted software** (`rules_malware.json`, 12 rules) —
+   blocks known cryptominers and widely-documented adware/bundler distribution
+   domains. This is a best-effort browser supplement; real-time phishing feeds
+   run at the DNS level via NetShield on the VPN tunnel (server resolvers).
+3. **Per-category toggles + live counters** in the popup — block counts are
+   tracked via `onRuleMatchedDebug` (best-effort) and resettable.
+
+New permissions: `declarativeNetRequest`, `declarativeNetRequestFeedback`
+(expect another Chrome install/update warning). Rulesets are toggleable at
+runtime via `updateEnabledRulesets` — no reload needed.
 
 Draft build — **not yet pushed** to `prince8076/phantom-GPS`. All code in this
 folder is original, written clean-room. Nothing was copied from any VPN vendor.

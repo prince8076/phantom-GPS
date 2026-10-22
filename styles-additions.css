@@ -415,3 +415,31 @@
   .vpn-hero-grid, .qr-grid { grid-template-columns: 1fr; }
   .vpn-hero { flex-direction: column; align-items: flex-start; }
 }
+
+/* Feature badges on fleet rows */
+.feat-badges { display: inline-flex; flex-wrap: wrap; gap: 4px; margin: 2px 0; }
+.feat-badge {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.3px;
+  padding: 2px 6px; border-radius: 4px; white-space: nowrap;
+}
+.feat-streaming { background: #e8f4ff; color: #1a6fc4; border: 1px solid #bfe0f7; }
+.feat-p2p { background: #f0eaff; color: #6a4fd0; border: 1px solid #d6c9f5; }
+.feat-secure { background: #e6f7ee; color: #1d7a44; border: 1px solid #bfe8d2; }
+.feat-tor { background: #f5f0e6; color: #8a6d1d; border: 1px solid #e6d9b8; }
+.panel-header h2 .feat-badge { vertical-align: middle; margin-left: 6px; }
+
+/* Secure Core entry/exit pickers */
+.secure-core-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 4px;
+}
+.secure-core-grid label {
+  display: flex; flex-direction: column; gap: 6px;
+  font-size: 12px; font-weight: 600; color: #33484d;
+}
+.secure-core-grid select { width: 100%; }
+@media (max-width: 700px) { .secure-core-grid { grid-template-columns: 1fr; } }
+
+/* Tor over VPN steps */
+.tor-steps { margin: 4px 0 0 0; padding-left: 20px; font-size: 13px; color: #33484d; }
+.tor-steps li { margin-bottom: 8px; line-height: 1.5; }
+.tor-steps li strong { color: #102a34; }

@@ -35,7 +35,14 @@ const DEFAULT_SETTINGS = {
   blockSpeculative: true,
   /* When true, browser traffic is routed through 127.0.0.1:8899 via PAC. */
   proxyEnabled: false,
+  /* NetShield-style domain blocking (declarativeNetRequest static rulesets). */
+  blockAdsTrackers: true,
+  blockMalware: true,
 };
+
+const RULESET_ADS = 'ads_trackers';
+const RULESET_MALWARE = 'malware_unwanted';
+const STATS_KEY = 'netshieldStats';
 
 function buildPacScript() {
   return [
@@ -148,7 +155,52 @@ async function applyAll(settings) {
     webrtc: await applyWebRtcPolicy(s.webrtcPolicy),
     speculative: await applySpeculativeBlock(s.blockSpeculative),
     proxy: await applyProxy(s.proxyEnabled),
+    blocking: await applyDomainBlocking(s),
   };
+}
+
+/* NetShield-style domain blocking via declarativeNetRequest static rulesets.
+   Toggleable per category without reloading the extension. */
+function applyDomainBlocking(settings) {
+  return new Promise((resolve) => {
+    if (!chrome.declarativeNetRequest || !chrome.declarativeNetRequest.updateEnabledRulesets) {
+      resolve({ ok: false, reason: 'declarativeNetRequest unavailable' });
+      return;
+    }
+    const enableRulesetIds = [];
+    const disableRulesetIds = [];
+    (settings.blockAdsTrackers ? enableRulesetIds : disableRulesetIds).push(RULESET_ADS);
+    (settings.blockMalware ? enableRulesetIds : disableRulesetIds).push(RULESET_MALWARE);
+    chrome.declarativeNetRequest.updateEnabledRulesets(
+      { enableRulesetIds, disableRulesetIds },
+      () => {
+        if (chrome.runtime.lastError) {
+          resolve({ ok: false, reason: chrome.runtime.lastError.message });
+        } else {
+          resolve({ ok: true });
+        }
+      }
+    );
+  });
+}
+
+/* Block counters: incremented whenever a static rule matches a request.
+   Best-effort — the debug event may not fire in every browser build. */
+async function bumpStat(kind) {
+  try {
+    const stored = await chrome.storage.local.get(STATS_KEY);
+    const stats = stored[STATS_KEY] || { adsBlocked: 0, malwareBlocked: 0, since: Date.now() };
+    if (kind === RULESET_ADS) stats.adsBlocked = (stats.adsBlocked || 0) + 1;
+    else stats.malwareBlocked = (stats.malwareBlocked || 0) + 1;
+    await chrome.storage.local.set({ [STATS_KEY]: stats });
+  } catch (e) { /* storage failure must never break browsing */ }
+}
+
+if (chrome.declarativeNetRequest && chrome.declarativeNetRequest.onRuleMatchedDebug) {
+  chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info) => {
+    if (!info || !info.rule || !info.rule.rulesetId) return;
+    bumpStat(info.rule.rulesetId).catch(() => {});
+  });
 }
 
 function getProxyControl() {
@@ -218,10 +270,17 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
       const settings = await getSettings();
       const proxyControl = await getProxyControl();
       const engineOnline = await isEngineOnline();
-      sendResponse({ settings, proxyControl, engineOnline });
+      const stored = await chrome.storage.local.get(STATS_KEY);
+      const stats = stored[STATS_KEY] || { adsBlocked: 0, malwareBlocked: 0 };
+      sendResponse({ settings, proxyControl, engineOnline, stats });
     } else if (msg.type === 'setLeakSettings') {
       const settings = await saveSettings(msg.patch);
       sendResponse({ settings });
+    } else if (msg.type === 'resetBlockStats') {
+      await chrome.storage.local.set({
+        [STATS_KEY]: { adsBlocked: 0, malwareBlocked: 0, since: Date.now() },
+      });
+      sendResponse({ ok: true });
     } else {
       sendResponse(null);
     }

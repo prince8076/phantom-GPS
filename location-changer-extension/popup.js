@@ -78,7 +78,7 @@ function sendToBackground(type, patch) {
 async function refreshLeakUI() {
   const state = await sendToBackground('getLeakState');
   if (!state || !state.settings) return;
-  const { settings, proxyControl, engineOnline } = state;
+  const { settings, proxyControl, engineOnline, stats } = state;
 
   const select = document.getElementById('webrtc-select');
   if (select && settings.webrtcPolicy) select.value = settings.webrtcPolicy;
@@ -88,6 +88,17 @@ async function refreshLeakUI() {
 
   const proxyToggle = document.getElementById('proxy-toggle');
   if (proxyToggle) proxyToggle.checked = !!settings.proxyEnabled;
+
+  const adsToggle = document.getElementById('ads-toggle');
+  if (adsToggle) adsToggle.checked = !!settings.blockAdsTrackers;
+
+  const malwareToggle = document.getElementById('malware-toggle');
+  if (malwareToggle) malwareToggle.checked = !!settings.blockMalware;
+
+  const adsCount = document.getElementById('ads-count');
+  if (adsCount && stats) adsCount.textContent = Number(stats.adsBlocked || 0).toLocaleString();
+  const malwareCount = document.getElementById('malware-count');
+  if (malwareCount && stats) malwareCount.textContent = Number(stats.malwareBlocked || 0).toLocaleString();
 
   const engineDot = document.getElementById('engine-dot');
   if (engineDot) {
@@ -143,6 +154,24 @@ document.addEventListener('DOMContentLoaded', () => {
   const proxyToggle = document.getElementById('proxy-toggle');
   if (proxyToggle) {
     proxyToggle.addEventListener('change', (e) => pushSetting({ proxyEnabled: e.target.checked }));
+  }
+
+  const adsToggle = document.getElementById('ads-toggle');
+  if (adsToggle) {
+    adsToggle.addEventListener('change', (e) => pushSetting({ blockAdsTrackers: e.target.checked }));
+  }
+
+  const malwareToggle = document.getElementById('malware-toggle');
+  if (malwareToggle) {
+    malwareToggle.addEventListener('change', (e) => pushSetting({ blockMalware: e.target.checked }));
+  }
+
+  const resetBtn = document.getElementById('reset-stats-btn');
+  if (resetBtn) {
+    resetBtn.addEventListener('click', async () => {
+      await sendToBackground('resetBlockStats');
+      await refreshLeakUI();
+    });
   }
 
   const copyBtn = document.getElementById('copy-dns-link');

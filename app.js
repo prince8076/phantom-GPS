@@ -128,6 +128,66 @@ proxyNodes.forEach((n) => {
   n.coords = 'Lat: ' + n.lat.toFixed(4) + ' · Lon: ' + n.lon.toFixed(4);
 });
 
+/* Feature flags per node: streaming-optimized, P2P-friendly, Secure-Core
+   capable exit, Tor-friendly jurisdiction. In production these arrive via
+   GET /api/servers (see SERVER_CONTRACT.md); here they seed the UI. */
+const NODE_FEATURES = {
+  zurich:    ['secure-core', 'p2p', 'tor'],
+  reykjavik: ['secure-core', 'p2p', 'tor'],
+  berlin:    ['streaming', 'p2p'],
+  london:    ['streaming'],
+  paris:     ['streaming'],
+  amsterdam: ['streaming', 'p2p'],
+  newyork:   ['streaming', 'p2p'],
+  losangeles:['streaming', 'p2p'],
+  toronto:   ['streaming', 'p2p'],
+  singapore: ['streaming', 'p2p'],
+  tokyo:     ['streaming'],
+  stockholm: ['secure-core', 'p2p', 'tor'],
+  oslo:      ['secure-core', 'tor'],
+  helsinki:  ['p2p'],
+  dublin:    ['streaming'],
+  frankfurt: ['streaming', 'p2p'],
+  vienna:    ['p2p', 'tor'],
+  prague:    ['p2p'],
+  bucharest: ['p2p', 'tor'],
+  sydney:    ['streaming'],
+  seoul:     ['streaming'],
+  mumbai:    ['streaming'],
+};
+proxyNodes.forEach((n) => { n.features = NODE_FEATURES[n.id] || []; });
+
+const FEATURE_BADGES = {
+  'streaming':   '<span class="feat-badge feat-streaming" title="Streaming-optimized server">▶ Streaming</span>',
+  'p2p':         '<span class="feat-badge feat-p2p" title="P2P / file-sharing friendly">⇄ P2P</span>',
+  'secure-core': '<span class="feat-badge feat-secure" title="Can serve as Secure Core exit">🛡 Secure Core</span>',
+  'tor':         '<span class="feat-badge feat-tor" title="Tor-friendly jurisdiction">🧅 Tor OK</span>',
+};
+
+function featureBadges(n) {
+  return (n.features || []).map((f) => FEATURE_BADGES[f] || '').join('');
+}
+
+/* Populate the Secure Core entry/exit selects: secure-core-capable nodes
+   first, then the rest of the fleet. Keeps the saved selection. */
+function syncSecureCoreSelects() {
+  const entry = document.querySelector('#secure-core-entry');
+  const exit = document.querySelector('#secure-core-exit');
+  if (!entry || !exit) return;
+  const capable = proxyNodes.filter((n) => (n.features || []).includes('secure-core'));
+  const rest = proxyNodes.filter((n) => !(n.features || []).includes('secure-core'));
+  const ordered = capable.concat(rest);
+  const html = ordered.map((n) =>
+    '<option value="' + n.id + '">' + escapeHtml(n.name) +
+    ((n.features || []).includes('secure-core') ? ' 🛡' : '') + '</option>'
+  ).join('');
+  entry.innerHTML = html;
+  exit.innerHTML = html;
+  const sc = vpnConfig.secureCore || {};
+  if (sc.entryId) entry.value = sc.entryId;
+  if (sc.exitId) exit.value = sc.exitId;
+}
+
 function nodeScore(n) {
   return n.latencyMs * (1 + n.load / 100);
 }
@@ -157,7 +217,9 @@ function defaultVpnConfig() {
     splitTunneling: { enabled: false, mode: 'exclude', apps: [], ips: [] },
     customDns: [],
     lanBypass: true,
-    ipv6: 'block'                    // block | route
+    ipv6: 'block',                   // block | route
+    secureCore: { enabled: false, entryId: 'reykjavik', exitId: 'zurich' },
+    p2p: { portForward: false }
   };
 }
 
@@ -168,6 +230,8 @@ function loadVpnConfig() {
     const parsed = JSON.parse(raw);
     const merged = Object.assign(defaultVpnConfig(), parsed);
     merged.splitTunneling = Object.assign(defaultVpnConfig().splitTunneling, parsed.splitTunneling || {});
+    merged.secureCore = Object.assign(defaultVpnConfig().secureCore, parsed.secureCore || {});
+    merged.p2p = Object.assign(defaultVpnConfig().p2p, parsed.p2p || {});
     return merged;
   } catch (e) {
     return defaultVpnConfig();
@@ -293,6 +357,14 @@ function buildConfigPayload() {
       custom: vpnConfig.customDns.slice(),
       lanBypass: vpnConfig.lanBypass,
       ipv6: vpnConfig.ipv6
+    },
+    secureCore: {
+      enabled: !!(vpnConfig.secureCore && vpnConfig.secureCore.enabled),
+      entryId: (vpnConfig.secureCore && vpnConfig.secureCore.entryId) || '',
+      exitId: (vpnConfig.secureCore && vpnConfig.secureCore.exitId) || ''
+    },
+    p2p: {
+      portForward: !!(vpnConfig.p2p && vpnConfig.p2p.portForward)
     }
   };
 }
@@ -374,9 +446,12 @@ function fmtCadenceLong() {
 function renderFleetRow(n) {
   const active = vpnConfig.serverMode === 'manual' && vpnConfig.serverId === n.id;
   const loadClass = n.load >= 65 ? 'high' : (n.load >= 40 ? 'mid' : 'low');
+  const badges = featureBadges(n);
   return '<button class="fleet-row' + (active ? ' active' : '') + '" data-node="' + n.id + '">' +
     '<span class="fleet-flag">' + countryFlag(n.country) + '</span>' +
-    '<span class="fleet-meta"><strong>' + escapeHtml(n.name) + '</strong><small>' + escapeHtml(n.ip) + ' · ' + n.latencyMs + ' ms</small></span>' +
+    '<span class="fleet-meta"><strong>' + escapeHtml(n.name) + '</strong>' +
+    (badges ? '<span class="feat-badges">' + badges + '</span>' : '') +
+    '<small>' + escapeHtml(n.ip) + ' · ' + n.latencyMs + ' ms</small></span>' +
     '<span class="load-wrap"><span class="load-bar"><i class="' + loadClass + '" style="width:' + n.load + '%"></i></span><small>' + n.load + '%</small></span>' +
     '</button>';
 }
@@ -540,6 +615,9 @@ function refreshAllControls() {
   const set = (sel, val) => { const el = document.querySelector(sel); if (el) el.checked = !!val; };
   set('#kill-switch-toggle', vpnConfig.killSwitch);
   set('#kill-switch-lockdown-toggle', vpnConfig.killSwitchLockdown);
+  set('#secure-core-toggle', vpnConfig.secureCore && vpnConfig.secureCore.enabled);
+  set('#p2p-portforward-toggle', vpnConfig.p2p && vpnConfig.p2p.portForward);
+  syncSecureCoreSelects();
   set('#split-toggle', vpnConfig.splitTunneling.enabled);
   set('#lan-bypass-toggle', vpnConfig.lanBypass);
   set('#auto-rotate-toggle', autoRotateActive);
@@ -1021,6 +1099,36 @@ function initGeoIpWorkspace() {
   if (ksLockToggle) ksLockToggle.addEventListener('change', (e) => {
     vpnConfig.killSwitchLockdown = e.target.checked;
     saveVpnConfig();
+  });
+
+  /* ----- Secure Core (multi-hop) ----- */
+  const scToggle = document.querySelector('#secure-core-toggle');
+  if (scToggle) scToggle.addEventListener('change', (e) => {
+    vpnConfig.secureCore.enabled = e.target.checked;
+    saveVpnConfig();
+    showToast(e.target.checked
+      ? '🛡 Secure Core enabled — traffic will chain entry → exit (needs server support).'
+      : 'Secure Core disabled.');
+  });
+  const scEntry = document.querySelector('#secure-core-entry');
+  if (scEntry) scEntry.addEventListener('change', (e) => {
+    vpnConfig.secureCore.entryId = e.target.value;
+    saveVpnConfig();
+  });
+  const scExit = document.querySelector('#secure-core-exit');
+  if (scExit) scExit.addEventListener('change', (e) => {
+    vpnConfig.secureCore.exitId = e.target.value;
+    saveVpnConfig();
+  });
+
+  /* ----- P2P port forwarding ----- */
+  const p2pToggle = document.querySelector('#p2p-portforward-toggle');
+  if (p2pToggle) p2pToggle.addEventListener('change', (e) => {
+    vpnConfig.p2p.portForward = e.target.checked;
+    saveVpnConfig();
+    showToast(e.target.checked
+      ? '⇄ Port forwarding requested (honored on P2P-labeled servers).'
+      : 'Port forwarding disabled.');
   });
 
   /* ----- Split tunneling ----- */

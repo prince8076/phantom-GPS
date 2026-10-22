@@ -77,6 +77,13 @@ public class VpnConfig {
         public long expiresAtMillis = 0; // epoch ms; 0 = non-expiring (not recommended)
     }
 
+    /** Secure Core multi-hop: route entry -> exit through two servers. */
+    public static class SecureCoreConfig {
+        public boolean enabled = false;
+        public String entryId = "";  // logical server id of the entry hop
+        public String exitId = "";   // logical server id of the exit hop
+    }
+
     public int version = 1;
     public final ServerInfo server = new ServerInfo();
     public Protocol protocol = Protocol.SMART;
@@ -87,6 +94,9 @@ public class VpnConfig {
     public boolean lanBypass = true;
     public Ipv6Mode ipv6Mode = Ipv6Mode.BLOCK;
     public final Credentials credentials = new Credentials();
+    public final SecureCoreConfig secureCore = new SecureCoreConfig();
+    /** Request a forwarded port for P2P on P2P-labeled servers (server must honor it). */
+    public boolean p2pPortForward = false;
     public int mtu = 1280;
 
     // ------------------------------------------------------------------ JSON
@@ -128,6 +138,14 @@ public class VpnConfig {
         c.put("address", credentials.address);
         c.put("expiresAt", credentials.expiresAtMillis);
         o.put("credentials", c);
+
+        JSONObject sc = new JSONObject();
+        sc.put("enabled", secureCore.enabled);
+        sc.put("entryId", secureCore.entryId);
+        sc.put("exitId", secureCore.exitId);
+        o.put("secureCore", sc);
+
+        o.put("p2pPortForward", p2pPortForward);
 
         return o;
     }
@@ -195,6 +213,18 @@ public class VpnConfig {
             cfg.credentials.address = c.optString("address", "");
             cfg.credentials.expiresAtMillis = c.optLong("expiresAt", 0);
         }
+
+        JSONObject sc = o.optJSONObject("secureCore");
+        if (sc != null) {
+            cfg.secureCore.enabled = sc.optBoolean("enabled", false);
+            cfg.secureCore.entryId = sc.optString("entryId", "");
+            cfg.secureCore.exitId = sc.optString("exitId", "");
+        }
+        // Dashboard nests these under "secureCore"/"p2p"; accept flat "p2pPortForward" too.
+        JSONObject p2p = o.optJSONObject("p2p");
+        cfg.p2pPortForward = p2p != null
+                ? p2p.optBoolean("portForward", false)
+                : o.optBoolean("p2pPortForward", false);
         return cfg;
     }
 

@@ -195,6 +195,28 @@
     <div class="hint">Paste <code>chrome://settings/security</code> into the address bar → Privacy and security → turn on <b>"Use secure DNS"</b>.</div>
   </div>
 
+  <div class="info-card">
+    <div class="section-title">🛡️ NetShield</div>
+
+    <div class="row">
+      <div>
+        <div class="row-title">Block ads &amp; trackers <span class="dot on" id="ads-dot"></span></div>
+        <div class="row-desc"><span id="ads-count">0</span> blocked — stops ad networks and tracking pixels before they load, which also speeds up pages.</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="ads-toggle"><span class="slider"></span></label>
+    </div>
+
+    <div class="row">
+      <div>
+        <div class="row-title">Block malware &amp; unwanted software <span class="dot on" id="malware-dot"></span></div>
+        <div class="row-desc"><span id="malware-count">0</span> blocked — stops known cryptominers and malicious distribution domains.</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="malware-toggle"><span class="slider"></span></label>
+    </div>
+
+    <div class="hint">Domain-level blocking in the browser. Full DNS-level NetShield (including phishing feeds) runs on the VPN tunnel via your server's filtering resolvers. <button class="mini-btn" id="reset-stats-btn" style="margin-top:6px;">Reset counters</button></div>
+  </div>
+
   <a href="http://127.0.0.1:3300" target="_blank" class="btn">Open Full Web Dashboard</a>
 
   <script src="popup.js"></script>

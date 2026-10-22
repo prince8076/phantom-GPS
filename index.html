@@ -265,6 +265,49 @@
         <section class="panel">
           <div class="panel-header">
             <div>
+              <h2>Secure Core <span class="feat-badge feat-secure">multi-hop</span></h2>
+              <p>Route traffic through two servers: entry → exit. Defeats network-level correlation.</p>
+            </div>
+            <label class="toggle-wrap" style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+              <input type="checkbox" id="secure-core-toggle" style="accent-color:var(--mint);" /> Enabled
+            </label>
+          </div>
+          <div class="secure-core-grid">
+            <label>Entry server
+              <select id="secure-core-entry" class="fleet-search" aria-label="Secure Core entry server"></select>
+            </label>
+            <label>Exit server
+              <select id="secure-core-exit" class="fleet-search" aria-label="Secure Core exit server"></select>
+            </label>
+          </div>
+          <div class="hint" style="margin-top:10px;">Multi-hop needs cooperating server infrastructure — your servers must accept chained WireGuard sessions. With your own server this is planned as nested tunnels; until then the setting is stored in the pushed config and honored when the backend supports it.</div>
+          <div class="panel-subhead" style="margin-top:18px;">P2P</div>
+          <div class="shield-rows">
+            <div class="shield-row">
+              <div><strong>Port forwarding</strong><small>Request a forwarded port for P2P/file-sharing on P2P-labeled servers</small></div>
+              <label class="toggle-wrap"><input type="checkbox" id="p2p-portforward-toggle" style="accent-color:var(--mint);" /> Enabled</label>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Tor over VPN <span class="feat-badge feat-tor">🧅</span></h2>
+              <p>Maximum anonymity: VPN hides Tor usage from your ISP; Tor hides your destination from the VPN.</p>
+            </div>
+          </div>
+          <ol class="tor-steps">
+            <li><strong>Connect the VPN first</strong> — use the connection hero above or the Android app.</li>
+            <li><strong>Then open Tor Browser</strong> — all Tor traffic now exits through the encrypted tunnel.</li>
+            <li>Keep NetShield on — it still filters trackers inside the tunnel.</li>
+          </ol>
+          <div class="hint">Tor over VPN is a usage pattern, not a toggle: no client change needed. Get Tor Browser from <code>torproject.org</code>. Expect slower speeds — that's the anonymity trade-off.</div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
               <h2>Split tunneling</h2>
               <p>Choose which apps and IPs bypass or exclusively use the tunnel</p>
             </div>
