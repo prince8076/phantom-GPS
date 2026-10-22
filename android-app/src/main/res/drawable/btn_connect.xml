@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Hero connect button: teal when disconnected, red when connected (selected). -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_selected="true">
+        <shape android:shape="oval">
+            <solid android:color="#e0655c" />
+            <stroke android:width="3dp" android:color="#7a2f2a" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape android:shape="oval">
+            <solid android:color="#4ecfa0" />
+            <stroke android:width="3dp" android:color="#1e5c46" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#5ce1b1" />
+            <stroke android:width="3dp" android:color="#1e5c46" />
+        </shape>
+    </item>
+</selector>

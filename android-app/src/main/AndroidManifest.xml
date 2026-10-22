@@ -37,6 +37,11 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!-- Phantom VPN connection screen (Proton-patterned client UI). -->
+        <activity
+            android:name=".vpn.VpnConnectActivity"
+            android:exported="false"
+            android:label="Phantom VPN" />
         <service
             android:name=".MockLocationService"
             android:foregroundServiceType="location"

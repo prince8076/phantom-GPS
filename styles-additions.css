@@ -443,3 +443,97 @@
 .tor-steps { margin: 4px 0 0 0; padding-left: 20px; font-size: 13px; color: #33484d; }
 .tor-steps li { margin-bottom: 8px; line-height: 1.5; }
 .tor-steps li strong { color: #102a34; }
+
+/* ============ Proton-patterned dark VPN client theme ============
+   Applies only inside the GeoIP/VPN view (.vpn-client wrapper).
+   Same information architecture as a native VPN client app —
+   status hero, connect button, server list — with this product's
+   own visual identity. No vendor branding or assets used. */
+.vpn-client {
+  background: #06090e;
+  border-radius: 16px;
+  padding: 24px;
+  margin: 0 -8px;
+}
+.vpn-client .page-heading h1 { color: #ffffff; }
+.vpn-client .page-heading .subheading { color: #8ba5a4; }
+.vpn-client .page-heading .eyebrow { color: #5ce1b1; }
+.vpn-client .metric-card {
+  background: #0d151d;
+  border: 1px solid #16232c;
+  border-radius: 12px;
+}
+.vpn-client .metric-card .metric-label { color: #8ba5a4; }
+.vpn-client .metric-card .metric-number,
+.vpn-client .metric-card strong { color: #ffffff; }
+.vpn-client .metric-card p { color: #8ba5a4; }
+.vpn-client .panel {
+  background: #0d151d;
+  border: 1px solid #16232c;
+  border-radius: 12px;
+}
+.vpn-client .panel h2 { color: #ffffff; }
+.vpn-client .panel p { color: #8ba5a4; }
+.vpn-client .panel-subhead { color: #8ba5a4; }
+.vpn-client .fleet-row {
+  background: #0d151d;
+  border: 1px solid #16232c;
+  border-radius: 10px;
+}
+.vpn-client .fleet-row:hover { border-color: #1e5c46; }
+.vpn-client .fleet-row.active { border-color: #5ce1b1; background: #102a34; }
+.vpn-client .fleet-meta strong { color: #ffffff; }
+.vpn-client .fleet-meta small { color: #8ba5a4; }
+.vpn-client .fleet-group { color: #8ba5a4; }
+.vpn-client .fleet-search,
+.vpn-client .tag-add-row input,
+.vpn-client select {
+  background: #0d151d;
+  border: 1px solid #224754;
+  color: #eaf3f1;
+}
+.vpn-client .fleet-search::placeholder { color: #5a7572; }
+.vpn-client .seg-btn {
+  background: #0d151d;
+  border: 1px solid #224754;
+  color: #8ba5a4;
+}
+.vpn-client .seg-btn.active {
+  background: #102a34;
+  border-color: #5ce1b1;
+  color: #5ce1b1;
+}
+.vpn-client .shield-row strong { color: #ffffff; }
+.vpn-client .shield-row small { color: #8ba5a4; }
+.vpn-client .toggle-wrap { color: #eaf3f1; }
+.vpn-client .tag-list .tag {
+  background: #102a34;
+  border: 1px solid #1e5c46;
+  color: #5ce1b1;
+}
+.vpn-client .hint { color: #8ba5a4; }
+.vpn-client .hint code { background: #0d151d; color: #5ce1b1; }
+.vpn-client .tor-steps { color: #8ba5a4; }
+.vpn-client .tor-steps li strong { color: #ffffff; }
+.vpn-client .secure-core-grid label { color: #8ba5a4; }
+.vpn-client .onboarding-hint {
+  background: #102a34;
+  border: 1px solid #1e5c46;
+}
+.vpn-client .onboarding-hint strong { color: #5ce1b1; }
+.vpn-client .onboarding-hint p { color: #a0b8b5; }
+.vpn-client .qr-box { background: #0d151d; border: 1px solid #16232c; }
+.vpn-client .config-preview {
+  background: #0a0f14;
+  border: 1px solid #16232c;
+  color: #a0b8b5;
+}
+.vpn-client table { color: #a0b8b5; }
+.vpn-client table th { color: #8ba5a4; }
+.vpn-client table td { border-color: #16232c; }
+.vpn-client .status.open { background: #102a34; color: #5ce1b1; }
+/* Feature badges stay colorful on dark */
+.vpn-client .feat-streaming { background: rgba(26,111,196,.15); color: #7fb8ec; border-color: #1a4a7a; }
+.vpn-client .feat-p2p { background: rgba(106,79,208,.15); color: #b3a1ec; border-color: #4a3a8a; }
+.vpn-client .feat-secure { background: rgba(29,122,68,.15); color: #6fd598; border-color: #1d5c3a; }
+.vpn-client .feat-tor { background: rgba(138,109,29,.15); color: #d8b95c; border-color: #6b5320; }
