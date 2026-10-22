@@ -22,6 +22,12 @@ $TUNNEL_AAR = "$ROOT\libs\tunnel.aar"
 $TUNNEL_DIR = "$BUILD_DIR\tunnel"
 $TUNNEL_JAR = "$TUNNEL_DIR\classes.jar"
 
+# Fail fast on native tool errors (PowerShell does not stop on native
+# non-zero exits by itself, which previously produced broken APKs silently).
+function Assert-Ok([string]$step) {
+    if ($LASTEXITCODE -ne 0) { throw "$step failed with exit code $LASTEXITCODE — see the error output above." }
+}
+
 Write-Host "Cleaning and creating build directories..."
 Remove-Item -Recurse -Force -ErrorAction SilentlyContinue $CLASSES_DIR, $GEN_DIR, $COMPILED_RES, $TUNNEL_DIR
 New-Item -ItemType Directory -Force -Path $BUILD_DIR | Out-Null
@@ -41,19 +47,28 @@ Write-Host "Tunnel AAR extracted."
 
 Write-Host "Step 1: Compiling resources with aapt2..."
 & "$BUILD_TOOLS\aapt2.exe" compile --dir "$ROOT\src\main\res" -o "$COMPILED_RES\res.zip"
+Assert-Ok "aapt2 compile"
 
 Write-Host "Step 2: Linking APK with aapt2..."
 Remove-Item -Force -ErrorAction SilentlyContinue $OUTPUT_APK
 & "$BUILD_TOOLS\aapt2.exe" link -I $ANDROID_JAR --manifest "$ROOT\src\main\AndroidManifest.xml" `
     --java $GEN_DIR -o "$OUTPUT_APK" "$COMPILED_RES\res.zip" --auto-add-overlay
+Assert-Ok "aapt2 link"
 
 Write-Host "Step 3: Compiling Java sources with javac..."
 $javaFiles = Get-ChildItem -Recurse -Filter "*.java" "$ROOT\src\main\java", $GEN_DIR | Select-Object -ExpandProperty FullName
 & $JAVAC -source 8 -target 8 -bootclasspath $ANDROID_JAR -classpath $TUNNEL_JAR -d $CLASSES_DIR $javaFiles
+Assert-Ok "javac"
+# Guard: the launcher activity must have compiled, otherwise the APK will
+# crash on launch with ClassNotFoundException.
+$launcherClass = "$CLASSES_DIR\ai\omnirush\chameleon\MainActivity.class"
+if (-not (Test-Path $launcherClass)) { throw "javac did not produce MainActivity.class — compilation failed silently. See javac errors above." }
 
 Write-Host "Step 4: Converting classes to DEX with d8..."
 $classFiles = Get-ChildItem -Recurse -Filter "*.class" $CLASSES_DIR | Select-Object -ExpandProperty FullName
 & "$BUILD_TOOLS\d8.bat" --lib $ANDROID_JAR --output $BUILD_DIR $classFiles $TUNNEL_JAR
+Assert-Ok "d8"
+if (-not (Test-Path "$BUILD_DIR\classes.dex")) { throw "d8 did not produce classes.dex." }
 
 Write-Host "Step 5: Packaging classes.dex and native libs into APK..."
 [Reflection.Assembly]::LoadWithPartialName('System.IO.Compression') | Out-Null
@@ -83,6 +98,7 @@ $zipArchive.Dispose()
 Write-Host "Step 6: Zipalign APK..."
 Remove-Item -Force -ErrorAction SilentlyContinue $ALIGNED_APK
 & "$BUILD_TOOLS\zipalign.exe" -v -p 4 "$OUTPUT_APK" "$ALIGNED_APK"
+Assert-Ok "zipalign"
 
 Write-Host "Step 7: Checking debug keystore..."
 $KEYSTORE = "$BUILD_DIR\debug.keystore"
@@ -92,6 +108,7 @@ if (-not (Test-Path $KEYSTORE)) {
 
 Write-Host "Step 8: Signing APK with apksigner..."
 & "$BUILD_TOOLS\apksigner.bat" sign --ks $KEYSTORE --ks-pass pass:android --key-pass pass:android --ks-key-alias androiddebugkey "$ALIGNED_APK"
+Assert-Ok "apksigner"
 
 Write-Host "Step 9: Publishing to desktop-app/public..."
 Copy-Item -Force $ALIGNED_APK "$PUBLIC_DIR\OmniRush-GPS.apk"
