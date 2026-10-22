@@ -1,0 +1,230 @@
+/* ============================================================================
+ * OmniRush Chameleon — background service worker (MV3)
+ *
+ * Browser-bodyguard duties that a content script cannot do:
+ *   1. WebRTC IP leak prevention  (chrome.privacy.network.webRTCIPHandlingPolicy)
+ *   2. Blocking speculative DNS prefetch / preconnect
+ *      (chrome.privacy.network.networkPredictionEnabled)
+ *   3. Optional PAC routing of browser traffic through the local
+ *      Smart Proxy Engine at 127.0.0.1:8899 (chrome.proxy)
+ *
+ * Settings live in chrome.storage.local under the key "leakProtection" and
+ * are re-applied on install, on browser startup, and whenever they change.
+ * All code below is original; no third-party code is used.
+ * ========================================================================== */
+'use strict';
+
+const PROXY_HOST = '127.0.0.1';
+const PROXY_PORT = 8899;
+const STATUS_URL = 'http://127.0.0.1:3300/api/status';
+const STORAGE_KEY = 'leakProtection';
+
+/* Valid chrome.privacy.network.webRTCIPHandlingPolicy values. */
+const WEBRTC_POLICIES = [
+  'disable_non_proxied_udp',
+  'default_public_interface_only',
+  'default',
+];
+
+const DEFAULT_SETTINGS = {
+  /* Maximum protection: WebRTC may not use non-proxied UDP, so the real IP
+     cannot leak through STUN/ICE when the proxy engine is routing traffic. */
+  webrtcPolicy: 'disable_non_proxied_udp',
+  /* When true, networkPredictionEnabled is forced OFF so Chrome does not
+     speculatively resolve DNS / preconnect to the ISP resolver. */
+  blockSpeculative: true,
+  /* When true, browser traffic is routed through 127.0.0.1:8899 via PAC. */
+  proxyEnabled: false,
+};
+
+function buildPacScript() {
+  return [
+    'function FindProxyForURL(url, host) {',
+    '  // Never loop the engine itself or loopback traffic through the proxy.',
+    '  if (host === "127.0.0.1" || host === "localhost" || host === "[::1]") return "DIRECT";',
+    '  if (isPlainHostName(host)) return "DIRECT";',
+    '  // LAN bypass: keep local-network traffic direct (mirrors VPN LAN-bypass).',
+    '  if (isInNet(host, "10.0.0.0", "255.0.0.0")) return "DIRECT";',
+    '  if (isInNet(host, "172.16.0.0", "255.240.0.0")) return "DIRECT";',
+    '  if (isInNet(host, "192.168.0.0", "255.255.0.0")) return "DIRECT";',
+    '  if (isInNet(host, "169.254.0.0", "255.255.0.0")) return "DIRECT";',
+    '  // Everything else goes through the local Smart Proxy Engine.',
+    '  // Fail closed: there is intentionally no DIRECT fallback, so traffic',
+    '  // cannot silently leak outside the proxy when the engine is down.',
+    `  return "PROXY ${PROXY_HOST}:${PROXY_PORT}";`,
+    '}',
+  ].join('\n');
+}
+
+async function getSettings() {
+  const stored = await chrome.storage.local.get(STORAGE_KEY);
+  const saved = stored[STORAGE_KEY] || {};
+  const merged = { ...DEFAULT_SETTINGS, ...saved };
+  if (!WEBRTC_POLICIES.includes(merged.webrtcPolicy)) {
+    merged.webrtcPolicy = DEFAULT_SETTINGS.webrtcPolicy;
+  }
+  return merged;
+}
+
+async function saveSettings(patch) {
+  const next = { ...(await getSettings()), ...(patch || {}) };
+  await chrome.storage.local.set({ [STORAGE_KEY]: next });
+  return next;
+}
+
+function setPrivacy(setting, value) {
+  return new Promise((resolve) => {
+    if (!setting || typeof setting.set !== 'function') {
+      resolve({ ok: false, reason: 'privacy API unavailable in this browser' });
+      return;
+    }
+    setting.get({}, (details) => {
+      if (
+        details &&
+        details.levelOfControl &&
+        details.levelOfControl !== 'controllable_by_this_extension' &&
+        details.levelOfControl !== 'controlled_by_this_extension'
+      ) {
+        resolve({ ok: false, reason: `controlled by ${details.levelOfControl}` });
+        return;
+      }
+      setting.set({ value }, () => {
+        if (chrome.runtime.lastError) {
+          resolve({ ok: false, reason: chrome.runtime.lastError.message });
+        } else {
+          resolve({ ok: true });
+        }
+      });
+    });
+  });
+}
+
+function applyWebRtcPolicy(policy) {
+  const setting =
+    chrome.privacy && chrome.privacy.network && chrome.privacy.network.webRTCIPHandlingPolicy;
+  return setPrivacy(setting, policy);
+}
+
+function applySpeculativeBlock(block) {
+  const setting =
+    chrome.privacy && chrome.privacy.network && chrome.privacy.network.networkPredictionEnabled;
+  /* networkPredictionEnabled=true means "allow prefetch"; we invert the toggle. */
+  return setPrivacy(setting, !block);
+}
+
+function applyProxy(enabled) {
+  return new Promise((resolve) => {
+    if (!chrome.proxy || !chrome.proxy.settings) {
+      resolve({ ok: false, reason: 'proxy API unavailable in this browser' });
+      return;
+    }
+    const done = () => {
+      if (chrome.runtime.lastError) {
+        resolve({ ok: false, reason: chrome.runtime.lastError.message });
+      } else {
+        resolve({ ok: true });
+      }
+    };
+    if (enabled) {
+      chrome.proxy.settings.set(
+        {
+          value: {
+            mode: 'pac_script',
+            pacScript: { data: buildPacScript(), mandatory: true },
+          },
+          scope: 'regular',
+        },
+        done
+      );
+    } else {
+      chrome.proxy.settings.clear({ scope: 'regular' }, done);
+    }
+  });
+}
+
+async function applyAll(settings) {
+  const s = settings || (await getSettings());
+  return {
+    webrtc: await applyWebRtcPolicy(s.webrtcPolicy),
+    speculative: await applySpeculativeBlock(s.blockSpeculative),
+    proxy: await applyProxy(s.proxyEnabled),
+  };
+}
+
+function getProxyControl() {
+  return new Promise((resolve) => {
+    if (!chrome.proxy || !chrome.proxy.settings) {
+      resolve({ levelOfControl: 'unavailable' });
+      return;
+    }
+    chrome.proxy.settings.get({ incognito: false }, (details) => {
+      resolve({
+        levelOfControl: (details && details.levelOfControl) || 'unknown',
+      });
+    });
+  });
+}
+
+async function isEngineOnline() {
+  try {
+    const res = await fetch(STATUS_URL, { cache: 'no-store' });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+/* Re-apply stored settings on install / update / browser startup. */
+chrome.runtime.onInstalled.addListener(() => {
+  applyAll().catch(() => {});
+});
+
+chrome.runtime.onStartup.addListener(() => {
+  applyAll().catch(() => {});
+});
+
+/* The popup writes to storage; the service worker applies the change. */
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes[STORAGE_KEY]) {
+    applyAll(changes[STORAGE_KEY].newValue).catch(() => {});
+  }
+});
+
+/* If something else grabs the WebRTC setting while we are awake, take it back. */
+
+if (chrome.privacy && chrome.privacy.network) {
+  const webrtcSetting = chrome.privacy.network.webRTCIPHandlingPolicy;
+  if (webrtcSetting && webrtcSetting.onChange && typeof webrtcSetting.onChange.addListener === 'function') {
+    webrtcSetting.onChange.addListener((details) => {
+      if (!details) return;
+      /* Re-assert whatever the user currently has selected, not the default. */
+      getSettings().then((s) => {
+        if (details.value !== s.webrtcPolicy) {
+          applyWebRtcPolicy(s.webrtcPolicy).catch(() => {});
+        }
+      });
+    });
+  }
+}
+
+/* Popup <-> background messaging. */
+chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  (async () => {
+    if (!msg || typeof msg.type !== 'string') {
+      sendResponse(null);
+      return;
+    }
+    if (msg.type === 'getLeakState') {
+      const settings = await getSettings();
+      const proxyControl = await getProxyControl();
+      const engineOnline = await isEngineOnline();
+      sendResponse({ settings, proxyControl, engineOnline });
+    } else if (msg.type === 'setLeakSettings') {
+      const settings = await saveSettings(msg.patch);
+      sendResponse({ settings });
+    } else {
+      sendResponse(null);
+    }
+  })().catch(() => sendResponse(null));
+  return true; /* async response */
+});
