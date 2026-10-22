@@ -9,6 +9,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles-additions.css" />
   </head>
   <body>
     <div class="app-shell">
@@ -51,16 +52,17 @@
         </section>
       </main>
     </div>
+
     <template id="geoip-view-template">
       <div class="page-heading">
         <div>
           <p class="eyebrow">REA CHAMELEON ENGINE 6.3.0</p>
           <h1>GeoIP & IP Rotation <span class="wave">🌐</span></h1>
-          <p class="subheading">Dissect network endpoints and change your location & IP address automatically every 5 minutes.</p>
+          <p class="subheading" id="geoip-subheading">Dissect network endpoints and change your location & IP address on your own cadence.</p>
         </div>
         <div style="display:flex;gap:12px;align-items:center;">
           <label style="display:flex;align-items:center;gap:8px;background:#102a34;color:#5ce1b1;padding:8px 14px;border-radius:8px;font-weight:600;font-size:13px;border:1px solid #2b535a;cursor:pointer;">
-            <input type="checkbox" id="master-shield-toggle" checked style="accent-color:var(--mint);width:16px;height:16px;" /> 🛡️ Chameleon Shield ON (5-Min Auto-Rotate)
+            <input type="checkbox" id="master-shield-toggle" checked style="accent-color:var(--mint);width:16px;height:16px;" /> <span id="shield-toggle-label">🛡️ Chameleon Shield ON</span>
           </label>
           <button class="primary-button" id="rotate-now-btn"><span>⚡</span> Rotate IP & Location Now</button>
         </div>
@@ -76,6 +78,13 @@
             </div>
           </div>
           <p id="timer-status-caption">Auto-rotates IP & location every 5 mins</p>
+          <div class="cadence-row" id="cadence-row" role="group" aria-label="Rotation cadence">
+            <button class="cadence-btn" data-cadence="60">1m</button>
+            <button class="cadence-btn" data-cadence="180">3m</button>
+            <button class="cadence-btn active" data-cadence="300">5m</button>
+            <button class="cadence-btn" data-cadence="600">10m</button>
+            <button class="cadence-btn" data-cadence="1800">30m</button>
+          </div>
         </article>
 
         <article class="metric-card">
@@ -93,31 +102,36 @@
         </article>
 
         <article class="metric-card">
-          <div class="metric-top"><span class="metric-label">REA RE-ENGINEERING</span><span class="trend positive">Active</span></div>
-          <strong class="metric-number compact">Bypassed</strong>
-          <p>Zero DNS leaks detected</p>
-          <span class="link-button" id="trigger-geo-test-btn" style="cursor:pointer;">Test Browser Geo API <span>→</span></span>
+          <div class="metric-top"><span class="metric-label">VPN CONFIG SYNC</span><span class="trend positive" id="sync-badge">● Ready</span></div>
+          <strong class="metric-number compact" id="config-summary">6 rules</strong>
+          <p id="sync-status-line">Dashboard is the control plane</p>
+          <button class="link-button" id="push-phone-btn">Push config to phone <span>→</span></button>
         </article>
       </div>
+
       <div class="content-grid">
         <section class="panel activity-panel">
           <div class="panel-header">
             <div>
-              <h2>Global proxy node selector</h2>
-              <p>Choose target jurisdiction or enable automated 5-minute rotation pool</p>
+              <h2>Server fleet <span class="fleet-count" id="fleet-count">32 nodes</span></h2>
+              <p>Choose a target jurisdiction or let the fleet pick the fastest node</p>
             </div>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <input type="search" id="fleet-search" class="fleet-search" placeholder="Search cities or countries…" aria-label="Search servers" />
+              <button class="primary-button fleet-fastest" id="fleet-fastest-btn"><span>⚡</span> Fastest</button>
+            </div>
+          </div>
+          <div class="fleet-tools">
             <label class="toggle-wrap" style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
-              <input type="checkbox" id="auto-rotate-toggle" checked style="accent-color:var(--mint);" /> Auto-Rotate (5 Min)
+              <input type="checkbox" id="auto-rotate-toggle" checked style="accent-color:var(--mint);" /> <span id="auto-rotate-label">Auto-Rotate (5 Min)</span>
             </label>
+            <div class="pool-modes" role="group" aria-label="Server selection mode">
+              <button class="pool-btn active" data-pool="manual">Manual</button>
+              <button class="pool-btn" data-pool="fastest">Fastest</button>
+              <button class="pool-btn" data-pool="random">Random pool</button>
+            </div>
           </div>
-          <div class="node-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:16px;">
-            <button class="quick-action node-btn active" data-node="zurich" style="padding:12px;"><span class="action-icon green">🇨🇭</span><span><strong>Zurich, CH</strong><small>185.220.101.7</small></span></button>
-            <button class="quick-action node-btn" data-node="tokyo" style="padding:12px;"><span class="action-icon purple">🇯🇵</span><span><strong>Tokyo, JP</strong><small>103.253.140.9</small></span></button>
-            <button class="quick-action node-btn" data-node="reykjavik" style="padding:12px;"><span class="action-icon blue">🇮🇸</span><span><strong>Reykjavik, IS</strong><small>185.159.157.2</small></span></button>
-            <button class="quick-action node-btn" data-node="newyork" style="padding:12px;"><span class="action-icon orange">🇺🇸</span><span><strong>New York, US</strong><small>198.51.100.42</small></span></button>
-            <button class="quick-action node-btn" data-node="singapore" style="padding:12px;"><span class="action-icon green">🇸🇬</span><span><strong>Singapore, SG</strong><small>165.22.240.18</small></span></button>
-            <button class="quick-action node-btn" data-node="berlin" style="padding:12px;"><span class="action-icon purple">🇩🇪</span><span><strong>Berlin, DE</strong><small>89.187.160.73</small></span></button>
-          </div>
+          <div class="fleet-list" id="fleet-list"></div>
         </section>
 
         <section class="panel quick-panel">
@@ -135,6 +149,131 @@
             [00:15] DNS leak test passed: 0 requests leaked to ISP.
             [00:30] Ready for 5-minute automated rotation cycle.
           </div>
+          <span class="link-button" id="trigger-geo-test-btn" style="cursor:pointer;">Test Browser Geo API <span>→</span></span>
+          <div class="panel-subhead">Connection profiles</div>
+          <div id="profiles-list" class="profiles-list"></div>
+          <div class="profile-save-row">
+            <input type="text" id="profile-name-input" class="fleet-search" placeholder="Profile name, e.g. Maximum Stealth" aria-label="New profile name" />
+            <button class="primary-button" id="save-profile-btn"><span>＋</span> Save current</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="content-grid">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Protocol selection</h2>
+              <p>Smart mode falls back: WireGuard UDP → TCP → TLS stealth</p>
+            </div>
+          </div>
+          <div class="radio-cards" id="protocol-cards" role="radiogroup" aria-label="VPN protocol">
+            <button class="radio-card active" data-protocol="smart" role="radio" aria-checked="true">
+              <strong>Smart</strong><small>Auto UDP → TCP → TLS</small>
+            </button>
+            <button class="radio-card" data-protocol="wireguard-udp" role="radio" aria-checked="false">
+              <strong>WireGuard UDP</strong><small>Fastest, standard</small>
+            </button>
+            <button class="radio-card" data-protocol="wireguard-tcp" role="radio" aria-checked="false">
+              <strong>WireGuard TCP</strong><small>Firewall-friendly</small>
+            </button>
+            <button class="radio-card" data-protocol="wireguard-tls" role="radio" aria-checked="false">
+              <strong>WireGuard TLS</strong><small>Stealth obfuscation</small>
+            </button>
+          </div>
+          <div class="panel-subhead">Shield settings</div>
+          <div class="shield-rows">
+            <div class="shield-row">
+              <div><strong>NetShield filtering</strong><small>DNS-level ad, tracker & malware blocking on the phone</small></div>
+              <div class="seg-control" id="netshield-seg" role="group" aria-label="NetShield level">
+                <button class="seg-btn active" data-netshield="off">Off</button>
+                <button class="seg-btn" data-netshield="malware">Malware</button>
+                <button class="seg-btn" data-netshield="ads-trackers">Ads + Trackers</button>
+                <button class="seg-btn" data-netshield="adult">+ Adult</button>
+              </div>
+            </div>
+            <div class="shield-row">
+              <div><strong>Kill switch</strong><small>Block all traffic if the tunnel drops</small></div>
+              <label class="toggle-wrap"><input type="checkbox" id="kill-switch-toggle" checked style="accent-color:var(--mint);" /> Enabled</label>
+            </div>
+            <div class="shield-row">
+              <div><strong>Always-on VPN lockdown</strong><small>Guide the phone to Android always-on + "block without VPN"</small></div>
+              <label class="toggle-wrap"><input type="checkbox" id="kill-switch-lockdown-toggle" checked style="accent-color:var(--mint);" /> Enabled</label>
+            </div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Split tunneling</h2>
+              <p>Choose which apps and IPs bypass or exclusively use the tunnel</p>
+            </div>
+            <label class="toggle-wrap" style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+              <input type="checkbox" id="split-toggle" style="accent-color:var(--mint);" /> Enabled
+            </label>
+          </div>
+          <div class="seg-control" id="split-mode-seg" role="group" aria-label="Split tunnel mode" style="margin-bottom:14px;">
+            <button class="seg-btn active" data-split-mode="exclude">Bypass tunnel</button>
+            <button class="seg-btn" data-split-mode="include">Only tunnel</button>
+          </div>
+          <div class="panel-subhead">Apps (package names)</div>
+          <div class="tag-list" id="split-apps-list"></div>
+          <div class="tag-add-row">
+            <input type="text" id="split-apps-input" class="fleet-search" placeholder="e.g. com.bank.example" aria-label="Add app package" />
+            <button class="primary-button" id="split-apps-add"><span>＋</span> Add</button>
+          </div>
+          <div class="panel-subhead" style="margin-top:16px;">IPs / CIDRs</div>
+          <div class="tag-list" id="split-ips-list"></div>
+          <div class="tag-add-row">
+            <input type="text" id="split-ips-input" class="fleet-search" placeholder="e.g. 192.168.1.0/24" aria-label="Add IP or CIDR" />
+            <button class="primary-button" id="split-ips-add"><span>＋</span> Add</button>
+          </div>
+        </section>
+      </div>
+
+      <div class="content-grid">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>Phone sync</h2>
+              <p>Push the full VPN config to the control hub for the Android app</p>
+            </div>
+            <span class="sync-pill" id="push-status">● Not pushed</span>
+          </div>
+          <div class="hub-row">
+            <input type="text" id="hub-url-input" class="fleet-search" value="http://127.0.0.1:3300" aria-label="Control hub URL" />
+            <button class="primary-button" id="push-phone-btn-2"><span>📲</span> Push config to phone</button>
+          </div>
+          <pre class="payload-preview" id="payload-preview">{}</pre>
+        </section>
+
+        <section class="panel quick-panel">
+          <div class="panel-header">
+            <div>
+              <h2>DNS & leak protection</h2>
+              <p>Resolver and route rules applied through the tunnel</p>
+            </div>
+          </div>
+          <div class="shield-rows">
+            <div class="shield-row">
+              <div><strong>LAN bypass</strong><small>Keep local network routes outside the tunnel</small></div>
+              <label class="toggle-wrap"><input type="checkbox" id="lan-bypass-toggle" checked style="accent-color:var(--mint);" /> Enabled</label>
+            </div>
+            <div class="shield-row">
+              <div><strong>IPv6 handling</strong><small>Prevent IPv6 leaks on dual-stack networks</small></div>
+              <div class="seg-control" id="ipv6-seg" role="group" aria-label="IPv6 handling">
+                <button class="seg-btn active" data-ipv6="block">Block</button>
+                <button class="seg-btn" data-ipv6="route">Route via tunnel</button>
+              </div>
+            </div>
+          </div>
+          <div class="panel-subhead">Custom DNS resolvers</div>
+          <div class="tag-list" id="custom-dns-list"></div>
+          <div class="tag-add-row">
+            <input type="text" id="custom-dns-input" class="fleet-search" placeholder="e.g. 1.1.1.1" aria-label="Add DNS resolver" />
+            <button class="primary-button" id="custom-dns-add"><span>＋</span> Add</button>
+          </div>
         </section>
       </div>
 
@@ -142,7 +281,7 @@
         <div class="panel-header">
           <div>
             <h2>IP & Location History Log</h2>
-            <p>Recent chameleonic rotations executed by REA engine (5-min intervals)</p>
+            <p>Recent chameleonic rotations executed by REA engine</p>
           </div>
           <button class="text-button" id="clear-logs-btn">Clear log <span>→</span></button>
         </div>

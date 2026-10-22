@@ -1,0 +1,265 @@
+/* ============================================================
+   Phantom VPN Control Plane — stylesheet additions
+   Load AFTER styles.css. Uses its CSS variables:
+   --mint, --mint-dark, --navy, --muted, --line, --surface, --ink
+   ============================================================ */
+
+/* ----- Rotation cadence picker ----- */
+.cadence-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 12px;
+}
+.cadence-btn {
+  flex: 1;
+  border: 1px solid var(--line);
+  background: #f6faf9;
+  color: #5d7c7e;
+  border-radius: 6px;
+  padding: 7px 0;
+  font: 600 11px 'DM Mono', monospace;
+  cursor: pointer;
+}
+.cadence-btn:hover { border-color: var(--mint); color: var(--mint-dark); }
+.cadence-btn.active {
+  background: #102a34;
+  border-color: #102a34;
+  color: var(--mint);
+}
+
+/* ----- Fleet panel ----- */
+.fleet-search {
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: #fff;
+  padding: 9px 12px;
+  color: var(--ink);
+  font: 12px inherit;
+  min-width: 200px;
+}
+.fleet-search::placeholder { color: #a4b0b0; }
+.primary-button.fleet-fastest {
+  padding: 10px 14px;
+  white-space: nowrap;
+}
+.fleet-count {
+  font: 500 10px 'DM Mono', monospace;
+  color: var(--mint-dark);
+  background: #e6f7f0;
+  border-radius: 10px;
+  padding: 3px 9px;
+  margin-left: 8px;
+  vertical-align: middle;
+}
+.fleet-tools {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 14px;
+  flex-wrap: wrap;
+}
+.pool-modes { display: flex; gap: 6px; }
+.pool-btn {
+  border: 1px solid var(--line);
+  background: #fff;
+  color: #6d7c7d;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font: 600 11px inherit;
+  cursor: pointer;
+}
+.pool-btn.active {
+  background: var(--navy);
+  border-color: var(--navy);
+  color: #effcf8;
+}
+.fleet-list {
+  margin-top: 14px;
+  max-height: 340px;
+  overflow-y: auto;
+  border: 1px solid #eef2f1;
+  border-radius: 8px;
+}
+.fleet-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 0;
+  border-bottom: 1px solid #eef2f1;
+  background: #fff;
+  padding: 11px 14px;
+  text-align: left;
+  cursor: pointer;
+}
+.fleet-row:last-child { border-bottom: 0; }
+.fleet-row:hover { background: #f4faf8; }
+.fleet-row.active { background: #eaf8f3; box-shadow: inset 3px 0 0 var(--mint); }
+.fleet-flag { font-size: 20px; }
+.fleet-meta { flex: 1; min-width: 0; }
+.fleet-meta strong { display: block; font-size: 12px; color: #31464b; }
+.fleet-meta small { display: block; font: 10px 'DM Mono', monospace; color: #99a5a5; margin-top: 3px; }
+.load-wrap { display: flex; align-items: center; gap: 8px; min-width: 110px; }
+.load-wrap small { font: 500 10px 'DM Mono', monospace; color: #8d9b9c; }
+.load-bar {
+  flex: 1;
+  height: 6px;
+  background: #eef3f1;
+  border-radius: 4px;
+  overflow: hidden;
+}
+.load-bar i { display: block; height: 100%; border-radius: 4px; }
+.load-bar i.low { background: var(--mint); }
+.load-bar i.mid { background: #f4c95d; }
+.load-bar i.high { background: #e56b60; }
+.fleet-empty { padding: 24px; text-align: center; color: #99a5a5; font-size: 12px; }
+
+/* ----- Section subheads ----- */
+.panel-subhead {
+  font: 600 10px 'DM Mono', monospace;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #8a9a9b;
+  margin: 18px 0 10px;
+}
+
+/* ----- Profiles ----- */
+.profiles-list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+.profile-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid #eef2f1;
+  border-radius: 8px;
+  padding: 10px 12px;
+  background: #fff;
+}
+.profile-card strong { display: block; font-size: 12px; color: #31464b; }
+.profile-card small { display: block; font-size: 10px; color: #99a5a5; margin-top: 3px; }
+.profile-actions { display: flex; align-items: center; gap: 6px; }
+.profile-apply { margin: 0; padding: 0; white-space: nowrap; }
+.profile-delete { font-size: 12px; }
+.profile-save-row { display: flex; gap: 8px; margin-top: 12px; }
+.profile-save-row .fleet-search { flex: 1; min-width: 0; }
+.profile-save-row .primary-button { white-space: nowrap; padding: 10px 14px; }
+
+/* ----- Protocol radio cards ----- */
+.radio-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 10px;
+  margin-top: 14px;
+}
+.radio-card {
+  border: 1px solid var(--line);
+  background: #fff;
+  border-radius: 8px;
+  padding: 14px 12px;
+  text-align: left;
+  cursor: pointer;
+  color: var(--ink);
+}
+.radio-card strong { display: block; font-size: 12px; }
+.radio-card small { display: block; font-size: 10px; color: #99a5a5; margin-top: 4px; }
+.radio-card:hover { border-color: var(--mint); }
+.radio-card.active {
+  border-color: var(--mint-dark);
+  background: #eaf8f3;
+  box-shadow: inset 0 0 0 1px var(--mint-dark);
+}
+
+/* ----- Segmented controls ----- */
+.seg-control {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  overflow: hidden;
+  background: #f6faf9;
+}
+.seg-btn {
+  border: 0;
+  background: transparent;
+  padding: 8px 13px;
+  font: 600 11px inherit;
+  color: #6d7c7d;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.seg-btn + .seg-btn { border-left: 1px solid var(--line); }
+.seg-btn.active { background: #102a34; color: var(--mint); }
+
+/* ----- Shield rows ----- */
+.shield-rows { display: flex; flex-direction: column; gap: 14px; margin-top: 14px; }
+.shield-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+}
+.shield-row strong { display: block; font-size: 12px; color: #31464b; }
+.shield-row small { display: block; font-size: 10px; color: #99a5a5; margin-top: 3px; max-width: 340px; }
+.toggle-wrap { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #31464b; cursor: pointer; white-space: nowrap; }
+
+/* ----- Tag chips (split tunneling, DNS) ----- */
+.tag-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: #102a34;
+  color: #d9f5ea;
+  border-radius: 14px;
+  padding: 6px 8px 6px 12px;
+  font: 500 11px 'DM Mono', monospace;
+}
+.tag-remove {
+  border: 0;
+  background: rgba(255, 255, 255, .14);
+  color: #d9f5ea;
+  border-radius: 50%;
+  width: 18px;
+  height: 18px;
+  font-size: 10px;
+  cursor: pointer;
+  line-height: 1;
+}
+.tag-remove:hover { background: #e56b60; color: #fff; }
+.tag-empty { font-size: 11px; color: #a4b0b0; }
+.tag-add-row { display: flex; gap: 8px; margin-top: 10px; }
+.tag-add-row .fleet-search { flex: 1; min-width: 0; }
+.tag-add-row .primary-button { white-space: nowrap; padding: 10px 14px; }
+
+/* ----- Phone sync ----- */
+.sync-pill {
+  font: 600 10px 'DM Mono', monospace;
+  background: #f0fbf7;
+  color: var(--mint-dark);
+  border: 1px solid #d8f0e6;
+  border-radius: 12px;
+  padding: 6px 12px;
+  white-space: nowrap;
+}
+.sync-pill.warn { background: #fff5e9; color: #dc8c4f; border-color: #f4d8c9; }
+.sync-pill.ok { background: #eaf8f3; color: var(--mint-dark); border-color: var(--mint); }
+.hub-row { display: flex; gap: 8px; margin-top: 14px; }
+.hub-row .fleet-search { flex: 1; min-width: 0; font-family: 'DM Mono', monospace; }
+.hub-row .primary-button { white-space: nowrap; padding: 10px 14px; }
+.payload-preview {
+  margin-top: 14px;
+  background: #102a34;
+  color: #5ce1b1;
+  font: 11px/1.6 'DM Mono', monospace;
+  padding: 14px;
+  border-radius: 8px;
+  max-height: 260px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 760px) {
+  .shield-row { flex-direction: column; align-items: flex-start; }
+  .hub-row, .tag-add-row, .profile-save-row { flex-direction: column; }
+}
