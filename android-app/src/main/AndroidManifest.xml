@@ -42,6 +42,23 @@
             android:name=".vpn.VpnConnectActivity"
             android:exported="false"
             android:label="Phantom VPN" />
+        <!-- Bottom-nav tabs: Home · Countries · Profiles · Settings. -->
+        <activity
+            android:name=".vpn.HomeActivity"
+            android:exported="false"
+            android:label="Phantom VPN" />
+        <activity
+            android:name=".vpn.CountriesActivity"
+            android:exported="false"
+            android:label="Countries" />
+        <activity
+            android:name=".vpn.ProfilesActivity"
+            android:exported="false"
+            android:label="Profiles" />
+        <activity
+            android:name=".vpn.SettingsActivity"
+            android:exported="false"
+            android:label="Settings" />
         <service
             android:name=".MockLocationService"
             android:foregroundServiceType="location"

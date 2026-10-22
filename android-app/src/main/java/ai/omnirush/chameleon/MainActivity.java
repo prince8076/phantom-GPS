@@ -137,7 +137,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 @Override public void onClick(android.view.View v) {
                     startActivity(new android.content.Intent(
                         MainActivity.this,
-                        ai.omnirush.chameleon.vpn.VpnConnectActivity.class));
+                        ai.omnirush.chameleon.vpn.HomeActivity.class));
                 }
             });
         }

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shared bottom navigation: Home · Countries · Profiles · Settings.
+     Included at the bottom of each tab activity via <include layout="@layout/bottom_nav"/>.
+     Active tab gets the amethyst pill; see BottomNavHelper. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="#12121a"
+    android:paddingTop="6dp"
+    android:paddingBottom="10dp">
+
+    <LinearLayout
+        android:id="@+id/nav_home"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:background="@drawable/nav_pill">
+
+        <TextView
+            android:id="@+id/nav_home_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⌂"
+            android:textSize="22sp"
+            android:textColor="#9a93b8" />
+
+        <TextView
+            android:id="@+id/nav_home_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Home"
+            android:textSize="11sp"
+            android:textColor="#9a93b8" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nav_countries"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:background="@drawable/nav_pill">
+
+        <TextView
+            android:id="@+id/nav_countries_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🌍"
+            android:textSize="22sp"
+            android:textColor="#9a93b8" />
+
+        <TextView
+            android:id="@+id/nav_countries_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Countries"
+            android:textSize="11sp"
+            android:textColor="#9a93b8" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nav_profiles"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:background="@drawable/nav_pill">
+
+        <TextView
+            android:id="@+id/nav_profiles_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📋"
+            android:textSize="22sp"
+            android:textColor="#9a93b8" />
+
+        <TextView
+            android:id="@+id/nav_profiles_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Profiles"
+            android:textSize="11sp"
+            android:textColor="#9a93b8" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/nav_settings"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingTop="6dp"
+        android:paddingBottom="6dp"
+        android:background="@drawable/nav_pill">
+
+        <TextView
+            android:id="@+id/nav_settings_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⚙"
+            android:textSize="22sp"
+            android:textColor="#9a93b8" />
+
+        <TextView
+            android:id="@+id/nav_settings_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:textSize="11sp"
+            android:textColor="#9a93b8" />
+    </LinearLayout>
+
+</LinearLayout>
