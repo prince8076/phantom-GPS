@@ -9,14 +9,14 @@
     </item>
     <item android:state_pressed="true">
         <shape android:shape="oval">
-            <solid android:color="#4ecfa0" />
-            <stroke android:width="3dp" android:color="#1e5c46" />
+            <solid android:color="#a78bfa" />
+            <stroke android:width="3dp" android:color="#4c1d95" />
         </shape>
     </item>
     <item>
         <shape android:shape="oval">
-            <solid android:color="#5ce1b1" />
-            <stroke android:width="3dp" android:color="#1e5c46" />
+            <solid android:color="#8b5cf6" />
+            <stroke android:width="3dp" android:color="#4c1d95" />
         </shape>
     </item>
 </selector>

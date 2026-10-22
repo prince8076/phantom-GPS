@@ -6,7 +6,7 @@
     android:orientation="horizontal"
     android:gravity="center_vertical"
     android:padding="12dp"
-    android:background="#0d151d">
+    android:background="#12121a">
 
     <TextView
         android:id="@+id/row_flag"
@@ -37,7 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text=""
-            android:textColor="#5ce1b1"
+            android:textColor="#8b5cf6"
             android:textSize="10sp"
             android:layout_marginTop="2dp" />
 
@@ -46,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="-- ms"
-            android:textColor="#8ba5a4"
+            android:textColor="#9a93b8"
             android:textSize="11sp"
             android:layout_marginTop="2dp" />
     </LinearLayout>
@@ -64,15 +64,15 @@
             android:layout_height="wrap_content"
             android:max="100"
             android:progress="0"
-            android:progressTint="#5ce1b1"
-            android:progressBackgroundTint="#1e3d48" />
+            android:progressTint="#8b5cf6"
+            android:progressBackgroundTint="#2a2440" />
 
         <TextView
             android:id="@+id/row_load_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="--%"
-            android:textColor="#8ba5a4"
+            android:textColor="#9a93b8"
             android:textSize="10sp"
             android:layout_marginTop="2dp" />
     </LinearLayout>

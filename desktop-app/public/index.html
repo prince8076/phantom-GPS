@@ -12,17 +12,17 @@
   <script src="/qrcode.min.js"></script>
   <style>
     :root {
-      --bg: #06080d;
-      --card-bg: rgba(14, 19, 29, 0.75);
-      --card-border: rgba(255, 255, 255, 0.08);
-      --card-hover: rgba(26, 36, 54, 0.85);
-      --neon-cyan: #00f0ff;
-      --neon-teal: #00f2a9;
-      --neon-glow: rgba(0, 240, 255, 0.35);
+      --bg: #0a0a10;
+      --card-bg: rgba(18, 18, 26, 0.78);
+      --card-border: rgba(139, 92, 246, 0.14);
+      --card-hover: rgba(32, 28, 62, 0.88);
+      --neon-cyan: #00e5ff;
+      --neon-teal: #8b5cf6;
+      --neon-glow: rgba(0, 229, 255, 0.35);
       --neon-crimson: #ff3b69;
       --text-primary: #ffffff;
-      --text-muted: #8a99ad;
-      --text-dim: #4d5b6e;
+      --text-muted: #9a93b8;
+      --text-dim: #5f587e;
       --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
       --font-mono: 'JetBrains Mono', monospace;
       --radius: 18px;
@@ -34,8 +34,8 @@
       font-family: var(--font-sans);
       background-color: var(--bg);
       background-image: 
-        radial-gradient(circle at 50% 15%, rgba(0, 240, 255, 0.08) 0%, transparent 60%),
-        radial-gradient(circle at 85% 85%, rgba(0, 242, 169, 0.04) 0%, transparent 50%);
+        radial-gradient(circle at 50% 15%, rgba(0, 229, 255, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 85% 85%, rgba(139, 92, 246, 0.04) 0%, transparent 50%);
       color: var(--text-primary);
       min-height: 100vh;
       overflow-x: hidden;
@@ -76,12 +76,12 @@
       width: 42px;
       height: 42px;
       border-radius: 12px;
-      background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 242, 169, 0.05));
-      border: 1px solid rgba(0, 240, 255, 0.3);
+      background: linear-gradient(135deg, rgba(0, 229, 255, 0.2), rgba(139, 92, 246, 0.05));
+      border: 1px solid rgba(0, 229, 255, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.15);
       flex-shrink: 0;
     }
 
@@ -124,8 +124,8 @@
       gap: 8px;
       padding: 7px 14px;
       border-radius: 40px;
-      background: rgba(0, 242, 169, 0.08);
-      border: 1px solid rgba(0, 242, 169, 0.25);
+      background: rgba(139, 92, 246, 0.08);
+      border: 1px solid rgba(139, 92, 246, 0.25);
       font-size: 11px;
       font-family: var(--font-mono);
       color: var(--neon-teal);
@@ -171,8 +171,8 @@
       gap: 6px;
       padding: 7px 14px;
       border-radius: 40px;
-      background: rgba(0, 240, 255, 0.1);
-      border: 1px solid rgba(0, 240, 255, 0.35);
+      background: rgba(0, 229, 255, 0.1);
+      border: 1px solid rgba(0, 229, 255, 0.35);
       color: var(--neon-cyan);
       font-size: 11px;
       font-family: var(--font-mono);
@@ -184,7 +184,7 @@
     .btn-admin-pill:hover {
       background: var(--neon-cyan);
       color: #050a10;
-      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+      box-shadow: 0 0 15px rgba(0, 229, 255, 0.4);
     }
 
     /* MAIN DRIBBBLE VPN GRID: 3-PANEL COMPOSITION */
@@ -220,7 +220,7 @@
       justify-content: center;
       position: relative;
       min-height: 480px;
-      background: radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.06) 0%, rgba(14, 19, 29, 0.8) 70%);
+      background: radial-gradient(circle at 50% 50%, rgba(0, 229, 255, 0.06) 0%, rgba(18, 18, 26, 0.85) 70%);
     }
 
     .radar-orbit-1 {
@@ -228,7 +228,7 @@
       width: 320px;
       height: 320px;
       border-radius: 50%;
-      border: 1px dashed rgba(0, 240, 255, 0.12);
+      border: 1px dashed rgba(0, 229, 255, 0.12);
       animation: rotate 60s linear infinite;
       pointer-events: none;
     }
@@ -257,10 +257,10 @@
       width: 170px;
       height: 170px;
       border-radius: 50%;
-      background: linear-gradient(145deg, #121927, #080c14);
-      border: 2px solid rgba(0, 240, 255, 0.3);
+      background: linear-gradient(145deg, #1a1626, #0a0a10);
+      border: 2px solid rgba(0, 229, 255, 0.3);
       box-shadow: 
-        0 0 40px rgba(0, 240, 255, 0.25),
+        0 0 40px rgba(0, 229, 255, 0.25),
         inset 0 2px 4px rgba(255, 255, 255, 0.15),
         inset 0 -2px 6px rgba(0, 0, 0, 0.6);
       display: flex;
@@ -274,18 +274,22 @@
       transform: scale(1.04);
       border-color: var(--neon-cyan);
       box-shadow: 
-        0 0 60px rgba(0, 240, 255, 0.45),
-        0 0 100px rgba(0, 240, 255, 0.15),
-        inset 0 0 20px rgba(0, 240, 255, 0.4);
+        0 0 60px rgba(0, 229, 255, 0.45),
+        0 0 100px rgba(0, 229, 255, 0.15),
+        inset 0 0 20px rgba(0, 229, 255, 0.4);
     }
 
     .power-button-ring.connected {
-      border-color: var(--neon-cyan);
-      background: radial-gradient(circle, #0e202e 0%, #071018 100%);
-      box-shadow: 
-        0 0 60px rgba(0, 240, 255, 0.5),
-        0 0 120px rgba(0, 240, 255, 0.2),
-        inset 0 0 25px rgba(0, 240, 255, 0.5);
+      border-color: var(--neon-teal);
+      background: radial-gradient(circle, #1c1533 0%, #0a0a10 100%);
+      box-shadow:
+        0 0 60px rgba(139, 92, 246, 0.55),
+        0 0 120px rgba(139, 92, 246, 0.22),
+        inset 0 0 25px rgba(139, 92, 246, 0.45);
+    }
+    .power-button-ring.connected .power-svg {
+      stroke: var(--neon-teal);
+      filter: drop-shadow(0 0 10px var(--neon-teal));
     }
 
     .power-svg {
@@ -346,8 +350,8 @@
       width: 34px;
       height: 34px;
       border-radius: 10px;
-      background: rgba(0, 240, 255, 0.08);
-      border: 1px solid rgba(0, 240, 255, 0.2);
+      background: rgba(0, 229, 255, 0.08);
+      border: 1px solid rgba(0, 229, 255, 0.2);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -381,7 +385,7 @@
 
     /* LEFT PANEL: ACTIVE SERVER & LIVE ROUTE SIMULATOR */
     .server-card {
-      background: linear-gradient(180deg, rgba(16, 24, 38, 0.8) 0%, rgba(9, 13, 20, 0.9) 100%);
+      background: linear-gradient(180deg, rgba(24, 20, 40, 0.85) 0%, rgba(10, 10, 16, 0.92) 100%);
       border: 1px solid var(--card-border);
       border-radius: 14px;
       padding: 16px;
@@ -453,7 +457,7 @@
 
     .input-vpn:focus {
       border-color: var(--neon-cyan);
-      box-shadow: 0 0 14px rgba(0, 240, 255, 0.2);
+      box-shadow: 0 0 14px rgba(0, 229, 255, 0.2);
     }
 
     .select-vpn {
@@ -480,13 +484,13 @@
       font-weight: 800;
       font-family: var(--font-sans);
       cursor: pointer;
-      box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
+      box-shadow: 0 4px 20px rgba(0, 229, 255, 0.3);
       transition: all 0.2s;
     }
 
     .btn-gradient:hover {
       transform: translateY(-1px);
-      box-shadow: 0 6px 26px rgba(0, 240, 255, 0.45);
+      box-shadow: 0 6px 26px rgba(0, 229, 255, 0.45);
     }
 
     .btn-secondary {
@@ -540,7 +544,7 @@
     }
 
     .node-item-card {
-      background: rgba(8, 12, 18, 0.6);
+      background: rgba(10, 10, 16, 0.65);
       border: 1px solid var(--card-border);
       border-radius: 12px;
       padding: 10px 14px;
@@ -553,14 +557,14 @@
 
     .node-item-card:hover {
       border-color: var(--neon-cyan);
-      background: rgba(0, 240, 255, 0.05);
+      background: rgba(0, 229, 255, 0.05);
       transform: translateX(2px);
     }
 
     .node-item-card.active {
       border-color: var(--neon-cyan);
-      background: rgba(0, 240, 255, 0.12);
-      box-shadow: inset 0 0 12px rgba(0, 240, 255, 0.15);
+      background: rgba(0, 229, 255, 0.12);
+      box-shadow: inset 0 0 12px rgba(0, 229, 255, 0.15);
     }
 
     .node-meta-left {
@@ -576,7 +580,7 @@
       font-size: 11px;
       font-family: var(--font-mono);
       color: var(--neon-teal);
-      background: rgba(0, 242, 169, 0.08);
+      background: rgba(139, 92, 246, 0.08);
       padding: 2px 8px;
       border-radius: 12px;
     }
@@ -635,7 +639,7 @@
     }
 
     .autocomplete-item:hover {
-      background: rgba(0, 240, 255, 0.12);
+      background: rgba(0, 229, 255, 0.12);
     }
 
     .ac-title { font-weight: 700; color: #fff; }
@@ -676,7 +680,7 @@
     /* ADMIN & USERS SECTION */
     .admin-section {
       background: var(--card-bg);
-      border: 1px solid rgba(0, 240, 255, 0.25);
+      border: 1px solid rgba(0, 229, 255, 0.25);
       border-radius: var(--radius);
       padding: 24px;
       backdrop-filter: blur(20px);
@@ -694,7 +698,7 @@
     }
 
     .admin-badge {
-      background: rgba(0, 240, 255, 0.12);
+      background: rgba(0, 229, 255, 0.12);
       border: 1px solid var(--neon-cyan);
       color: var(--neon-cyan);
       font-size: 11px;
@@ -838,14 +842,14 @@
 
     .modal-card {
       background: #0d121c;
-      border: 1px solid rgba(0, 240, 255, 0.3);
+      border: 1px solid rgba(0, 229, 255, 0.3);
       border-radius: 20px;
       padding: 26px;
       max-width: 420px;
       width: 90%;
       text-align: center;
       position: relative;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 240, 255, 0.15);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 229, 255, 0.15);
     }
 
     .modal-close-btn {
@@ -865,7 +869,7 @@
       border-radius: 14px;
       display: inline-block;
       margin: 16px 0 12px;
-      box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+      box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
     }
 
     /* Dark-mode filter for keyless OSM tiles (keeps the stealth-radar look) */
@@ -936,7 +940,7 @@
         <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <span style="font-size: 12px; font-weight: 700; color: #fff; font-family: var(--font-mono);">route spoofer</span>
-            <span id="route-badge" style="display: none; font-size: 10px; font-family: var(--font-mono); color: var(--neon-teal); background: rgba(0, 242, 169, 0.1); padding: 2px 8px; border-radius: 10px;">moving</span>
+            <span id="route-badge" style="display: none; font-size: 10px; font-family: var(--font-mono); color: var(--neon-teal); background: rgba(139, 92, 246, 0.1); padding: 2px 8px; border-radius: 10px;">moving</span>
           </div>
 
           <div style="position: relative;">
@@ -1177,7 +1181,7 @@
         });
 
         marker = L.marker([lat, lon], { icon: customIcon }).addTo(map).bindPopup(title);
-        pathPolyline = L.polyline([], { color: '#00f0ff', weight: 3, dashArray: '4, 4' }).addTo(map);
+        pathPolyline = L.polyline([], { color: '#00e5ff', weight: 3, dashArray: '4, 4' }).addTo(map);
       } else {
         marker.setLatLng([lat, lon]).setPopupContent(title);
         map.panTo([lat, lon]);

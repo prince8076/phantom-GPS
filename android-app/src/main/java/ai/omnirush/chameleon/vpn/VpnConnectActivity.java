@@ -299,7 +299,7 @@ public class VpnConnectActivity extends Activity {
         String pillText;
         switch (state) {
             case CONNECTED:
-                pillText = "● Connected"; pillColor = 0xFF5CE1B1; break;
+                pillText = "● Connected"; pillColor = 0xFF8B5CF6; break;
             case CONNECTING:
             case SCANNING:
             case RECONNECTING:
@@ -311,7 +311,7 @@ public class VpnConnectActivity extends Activity {
                 pillText = "● Error"; pillColor = 0xFFE0655C; break;
             case DISABLED:
             default:
-                pillText = "● Disconnected"; pillColor = 0xFF8BA5A4; break;
+                pillText = "● Disconnected"; pillColor = 0xFF9A93B8; break;
         }
         statusPill.setText(pillText);
         statusPill.setTextColor(pillColor);

@@ -9,7 +9,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="#06090e"
+    android:background="#0a0a10"
     android:padding="16dp">
 
     <!-- Status card -->
@@ -17,7 +17,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="#0d151d"
+        android:background="#12121a"
         android:padding="16dp">
 
         <TextView
@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="● Disconnected"
-            android:textColor="#8ba5a4"
+            android:textColor="#9a93b8"
             android:textSize="13sp"
             android:textStyle="bold" />
 
@@ -45,7 +45,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:text="Your traffic is not protected"
-            android:textColor="#8ba5a4"
+            android:textColor="#9a93b8"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -63,7 +63,7 @@
             android:layout_gravity="center"
             android:background="@drawable/btn_connect"
             android:text="CONNECT"
-            android:textColor="#062a24"
+            android:textColor="#1e1b4b"
             android:textSize="16sp"
             android:textStyle="bold" />
     </FrameLayout>
@@ -87,7 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="SESSION"
-                android:textColor="#8ba5a4"
+                android:textColor="#9a93b8"
                 android:textSize="10sp" />
 
             <TextView
@@ -111,7 +111,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="DOWN"
-                android:textColor="#8ba5a4"
+                android:textColor="#9a93b8"
                 android:textSize="10sp" />
 
             <TextView
@@ -119,7 +119,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0 B"
-                android:textColor="#5ce1b1"
+                android:textColor="#8b5cf6"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -135,7 +135,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="UP"
-                android:textColor="#8ba5a4"
+                android:textColor="#9a93b8"
                 android:textSize="10sp" />
 
             <TextView
@@ -143,7 +143,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0 B"
-                android:textColor="#5ce1b1"
+                android:textColor="#8b5cf6"
                 android:textSize="14sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -173,7 +173,7 @@
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
             android:text="↻ Refresh"
-            android:textColor="#5ce1b1"
+            android:textColor="#8b5cf6"
             android:textSize="12sp" />
     </LinearLayout>
 
@@ -182,7 +182,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Loading servers from the control hub…"
-        android:textColor="#8ba5a4"
+        android:textColor="#9a93b8"
         android:textSize="12sp"
         android:layout_marginBottom="8dp" />
 
@@ -192,7 +192,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:divider="#16232c"
+        android:divider="#2a2440"
         android:dividerHeight="1dp"
         android:scrollbars="vertical" />
 
@@ -209,7 +209,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="🛡️ NetShield"
-            android:textColor="#eaf3f1"
+            android:textColor="#f2f0ff"
             android:textSize="13sp" />
 
         <Switch
@@ -221,7 +221,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Kill switch"
-            android:textColor="#eaf3f1"
+            android:textColor="#f2f0ff"
             android:textSize="13sp"
             android:layout_marginStart="16dp" />
 

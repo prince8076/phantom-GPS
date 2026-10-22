@@ -139,7 +139,7 @@ public class ServerListAdapter extends BaseAdapter {
         }
 
         boolean selected = !selectedId.isEmpty() && selectedId.equals(s.id);
-        v.setBackgroundColor(selected ? 0xFF14323B : 0xFF0D151D);
+        v.setBackgroundColor(selected ? 0xFF241D4D : 0xFF12121A);
         return v;
     }
 
