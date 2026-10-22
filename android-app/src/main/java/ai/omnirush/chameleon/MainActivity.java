@@ -129,6 +129,18 @@ public class MainActivity extends Activity implements View.OnClickListener {
         tvStatus = (TextView) findViewById(R.id.tvStatus);
         tvProtectionHint = (TextView) findViewById(R.id.tvProtectionHint);
         tvLivePing = (TextView) findViewById(R.id.tvLivePing);
+
+        // Entry point to the Proton-patterned VPN connection screen.
+        android.widget.Button btnVpn = (android.widget.Button) findViewById(R.id.btn_open_vpn);
+        if (btnVpn != null) {
+            btnVpn.setOnClickListener(new android.view.View.OnClickListener() {
+                @Override public void onClick(android.view.View v) {
+                    startActivity(new android.content.Intent(
+                        MainActivity.this,
+                        ai.omnirush.chameleon.vpn.VpnConnectActivity.class));
+                }
+            });
+        }
         tvRouteBadge = (TextView) findViewById(R.id.tvRouteBadge);
         tvOutboundIp = (TextView) findViewById(R.id.tvOutboundIp);
         tvHopCadence = (TextView) findViewById(R.id.tvHopCadence);

@@ -581,6 +581,35 @@
       border-radius: 12px;
     }
 
+    /* Proton-patterned server rows: load bar + feature badges */
+    .node-item-main { flex: 1; min-width: 0; }
+    .node-item-top { display: flex; align-items: center; gap: 10px; }
+    .node-item-badges { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 5px; }
+    .feat-badge {
+      font-size: 9px; font-family: var(--font-mono); font-weight: 600;
+      padding: 1px 7px; border-radius: 10px; border: 1px solid;
+      letter-spacing: 0.3px; white-space: nowrap;
+    }
+    .feat-streaming { color: #7fb8ec; border-color: rgba(127,184,236,.35); background: rgba(127,184,236,.08); }
+    .feat-p2p { color: #b3a1ec; border-color: rgba(179,161,236,.35); background: rgba(179,161,236,.08); }
+    .feat-secure { color: #6fd598; border-color: rgba(111,213,152,.35); background: rgba(111,213,152,.08); }
+    .feat-tor { color: #d8b95c; border-color: rgba(216,185,92,.35); background: rgba(216,185,92,.08); }
+    .node-item-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+    .node-load-wrap {
+      width: 64px; height: 5px; border-radius: 3px;
+      background: rgba(255,255,255,0.08); overflow: hidden;
+    }
+    .node-load-fill { height: 100%; border-radius: 3px; background: var(--neon-teal); transition: width .3s; }
+    .node-load-fill.warn { background: #f0b45c; }
+    .node-load-fill.high { background: var(--neon-crimson); }
+    .node-load-label { font-size: 9px; font-family: var(--font-mono); color: var(--text-dim); }
+
+        .session-line {
+      margin-top: 6px; font-size: 11px; font-family: var(--font-mono);
+      color: var(--text-dim); letter-spacing: 0.4px;
+    }
+    .session-line span { color: var(--neon-teal); }
+
     /* AUTOCOMPLETE DROPDOWN */
     .autocomplete-list {
       position: absolute;
@@ -953,6 +982,7 @@
 
         <div class="power-status-label" id="power-status-text">connected &amp; secured</div>
         <div class="power-hint" id="power-hint-text">system location actively overridden</div>
+        <div class="session-line" id="session-line">session <span id="session-timer">00:00:00</span> · <span id="session-proto">wireguard</span> · <span id="session-server">reykjavik</span></div>
 
         <!-- TELEMETRY METRIC PILLS (RESPONSIVE) -->
         <div class="metrics-bar">
@@ -1121,6 +1151,7 @@
     let pathPolyline = null;
     let pathPoints = [];
     let isConnected = true;
+    window.addEventListener('load', () => { if (isConnected) startSessionTimer(); });
 
     // Initialize Sleek Dark Leaflet Map
     function initMap(lat, lon, title) {
@@ -1253,6 +1284,29 @@
       document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
     };
 
+    // Proton-style session timer (counts up while connected)
+    let sessionSecs = 0, sessionTick = null;
+    function fmtSession(s) {
+      const h = String(Math.floor(s / 3600)).padStart(2, '0');
+      const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+      const ss = String(s % 60).padStart(2, '0');
+      return `${h}:${m}:${ss}`;
+    }
+    function startSessionTimer() {
+      stopSessionTimer();
+      sessionTick = setInterval(() => {
+        sessionSecs++;
+        const el = document.getElementById('session-timer');
+        if (el) el.textContent = fmtSession(sessionSecs);
+      }, 1000);
+    }
+    function stopSessionTimer() {
+      if (sessionTick) clearInterval(sessionTick);
+      sessionTick = null; sessionSecs = 0;
+      const el = document.getElementById('session-timer');
+      if (el) el.textContent = '00:00:00';
+    }
+
     // Dribbble Master Power Button Toggle
     const masterBtn = document.getElementById('master-vpn-btn');
     const powerText = document.getElementById('power-status-text');
@@ -1263,6 +1317,7 @@
       isConnected = !isConnected;
       if (isConnected) {
         masterBtn.classList.add('connected');
+        startSessionTimer();
         powerText.innerText = 'connected & secured';
         powerHint.innerText = 'system location actively overridden';
         navText.innerText = 'protected & active';
@@ -1273,6 +1328,7 @@
         });
       } else {
         masterBtn.classList.remove('connected');
+        stopSessionTimer();
         powerText.innerText = 'disconnected';
         powerHint.innerText = 'tap to engage stealth tunnel';
         navText.innerText = 'standby mode';
@@ -1284,21 +1340,59 @@
       }
     };
 
+    // Feature flags per node (Proton-style badges). Served by the hub's
+    // /api/servers in the future; seeded locally until then.
+    const NODE_FEATURES = {
+      'zurich': ['secure', 'p2p', 'tor'], 'reykjavik': ['secure', 'p2p', 'tor'],
+      'stockholm': ['secure', 'tor'], 'oslo': ['secure'], 'helsinki': ['p2p'],
+      'berlin': ['streaming', 'p2p'], 'frankfurt': ['streaming', 'p2p'],
+      'london': ['streaming'], 'paris': ['streaming'], 'amsterdam': ['streaming', 'p2p'],
+      'newyork': ['streaming', 'p2p'], 'new-york': ['streaming', 'p2p'],
+      'losangeles': ['streaming', 'p2p'], 'los-angeles': ['streaming', 'p2p'],
+      'toronto': ['streaming', 'p2p'], 'singapore': ['streaming', 'p2p'],
+      'tokyo': ['streaming'], 'sydney': ['streaming'], 'seoul': ['streaming'],
+      'mumbai': ['streaming'], 'dublin': ['streaming'], 'vienna': ['p2p'],
+      'prague': ['p2p'], 'bucharest': ['p2p']
+    };
+    const FEAT_LABEL = { streaming: '▶ Streaming', p2p: '⇄ P2P', secure: '🛡 Secure Core', tor: '🧅 Tor' };
+    // Stable pseudo-load per node id (replaced by live data when the hub serves it).
+    function nodeLoad(id) {
+      let h = 0;
+      for (let i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 101;
+      return 18 + (h % 62);
+    }
+    function featBadges(id) {
+      const feats = NODE_FEATURES[id] || [];
+      return feats.map(f => `<span class="feat-badge feat-${f}">${FEAT_LABEL[f]}</span>`).join('');
+    }
+
     function renderNodePool(nodes, activeId) {
       const container = document.getElementById('node-list-container');
       container.innerHTML = '';
       nodes.forEach(n => {
         const div = document.createElement('div');
         div.className = `node-item-card ${n.id === activeId ? 'active' : ''}`;
+        const load = nodeLoad(n.id);
+        const loadCls = load >= 80 ? 'high' : (load >= 55 ? 'warn' : '');
+        const ping = Math.floor(Math.random() * 20 + 15);
         div.innerHTML = `
-          <div class="node-meta-left">
-            <span class="node-item-flag">${n.flag || '📍'}</span>
-            <div>
-              <div class="node-item-city">${n.city}</div>
-              <div class="node-item-country">${n.country.toLowerCase()}</div>
+          <div class="node-item-main">
+            <div class="node-item-top">
+              <span class="node-item-flag">${n.flag || '📍'}</span>
+              <div>
+                <div class="node-item-city">${n.city}</div>
+                <div class="node-item-country">${n.country.toLowerCase()}</div>
+              </div>
             </div>
+            <div class="node-item-badges">${featBadges(n.id)}</div>
           </div>
-          <span class="node-item-ping">${Math.floor(Math.random() * 20 + 15)}ms</span>
+          <div class="node-item-right">
+            <span class="node-item-ping">${ping}ms</span>
+            <div class="node-load-wrap" title="Server load">
+              <div class="node-load-fill ${loadCls}" style="width:${load}%"></div>
+            </div>
+            <span class="node-load-label">${load}% load</span>
+          </div>
         `;
         div.onclick = () => selectNode(n.id);
         container.appendChild(div);
@@ -1323,12 +1417,19 @@
     }
 
     async function selectNode(nodeId) {
+      const srvEl = document.getElementById('session-server');
+      const locEl = document.getElementById('current-location');
       await fetch('/api/select-node', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ nodeId })
       });
       updateStatus();
+      setTimeout(() => {
+        const loc = document.getElementById('current-location');
+        const srv = document.getElementById('session-server');
+        if (loc && srv) srv.textContent = loc.textContent.split(',')[0].trim().toLowerCase();
+      }, 800);
     }
 
     document.getElementById('manual-rotate-btn').onclick = async () => {

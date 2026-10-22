@@ -63,6 +63,19 @@
                 android:background="@drawable/bg_glass_card" />
         </LinearLayout>
 
+        <!-- VPN CONNECTION SCREEN ENTRY -->
+        <Button
+            android:id="@+id/btn_open_vpn"
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="4dp"
+            android:background="@drawable/btn_primary"
+            android:text="🛡️ OPEN VPN CONNECTION"
+            android:textColor="#062a24"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
         <!-- DRIBBBLE VPN HERO SECTION: GLOWING CIRCULAR POWER BUTTON & METRICS -->
         <LinearLayout
             android:layout_width="match_parent"
