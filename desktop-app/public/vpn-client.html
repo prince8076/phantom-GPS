@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>phantom · vpn client</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="theme.css" />
+  <style>
+    /* page-scoped layout — vc-* prefix. All color/type/spacing from theme.css */
+    .vc-shell {
+      display: grid;
+      grid-template-columns: var(--sidebar-w) 1fr;
+      min-height: 100vh;
+    }
+
+    /* ---- fixed left sidebar ---- */
+    .vc-side {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      gap: var(--sp-2);
+      padding: var(--sp-4) var(--sp-3);
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+    }
+    .vc-brand { display: flex; align-items: center; gap: var(--sp-3); padding: var(--sp-2) var(--sp-3); }
+    .vc-brand-mark {
+      width: 36px; height: 36px; border-radius: var(--r-sm);
+      background: var(--accent);
+      color: #0d0a1a;
+      display: inline-flex; align-items: center; justify-content: center;
+      box-shadow: var(--glow-amethyst);
+      flex: none;
+    }
+    .vc-brand-mark svg { width: 20px; height: 20px; }
+    .vc-brand b { font-size: 15px; letter-spacing: 0.06em; }
+    .vc-brand small { display: block; font-family: var(--font-mono); font-size: 10px; color: var(--text-dim); letter-spacing: 0.08em; }
+    .vc-nav { display: flex; flex-direction: column; gap: 2px; margin-top: var(--sp-2); }
+    .vc-side-foot { margin-top: auto; display: flex; flex-direction: column; gap: var(--sp-2); padding: var(--sp-2) var(--sp-3); }
+
+    /* ---- main column ---- */
+    .vc-main { min-width: 0; display: flex; flex-direction: column; }
+    .vc-top {
+      position: sticky; top: 0; z-index: 20;
+      height: var(--header-h);
+      display: flex; align-items: center; gap: var(--sp-3);
+      padding: 0 var(--sp-6);
+      background: rgba(10, 10, 16, 0.88);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .vc-top h1 { font-size: 17px; }
+    .vc-top-right { margin-left: auto; display: flex; align-items: center; gap: var(--sp-2); }
+    .vc-iconbtn {
+      width: 36px; height: 36px; border-radius: var(--r-sm);
+      border: 1px solid var(--border); background: var(--bg-raised);
+      color: var(--text-muted); cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+      transition: color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out),
+                  box-shadow var(--t-fast) var(--ease-out), transform var(--t-fast) var(--ease-snap);
+    }
+    .vc-iconbtn svg { width: 17px; height: 17px; }
+    .vc-iconbtn:hover { color: var(--text-primary); border-color: var(--border-glow); box-shadow: var(--glow-amethyst); }
+    .vc-iconbtn:active { transform: scale(0.9); }
+
+    .vc-body {
+      padding: var(--sp-6);
+      display: flex; flex-direction: column; gap: var(--sp-4);
+      max-width: 1240px; width: 100%; margin: 0 auto;
+    }
+
+    /* ---- connection hero ---- */
+    .vc-hero { display: grid; grid-template-columns: auto 1fr; gap: var(--sp-6); align-items: center; padding: var(--sp-6); }
+    .vc-hero.is-live { border-color: var(--accent); box-shadow: var(--shadow-card), var(--glow-amethyst); }
+    .vc-hero-left { display: flex; align-items: center; gap: var(--sp-5); }
+    .vc-status h2 { font-size: 22px; margin-bottom: 2px; }
+    .vc-status p { font-size: 13px; }
+    .vc-iprow { display: flex; align-items: center; gap: var(--sp-2); margin-top: var(--sp-3); flex-wrap: wrap; }
+    .vc-hero-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--sp-4); }
+
+    /* ---- two-column panels ---- */
+    .vc-panels { display: grid; grid-template-columns: 2fr 1fr; gap: var(--sp-4); align-items: start; }
+    .vc-panel-head { display: flex; align-items: center; gap: var(--sp-2); margin-bottom: var(--sp-3); flex-wrap: wrap; }
+    .vc-panel-head h3 { font-size: 14px; margin-right: auto; }
+
+    .vc-server {
+      display: grid;
+      grid-template-columns: 44px 1fr auto;
+      gap: var(--sp-3);
+      align-items: center;
+      padding: var(--sp-3);
+      border: 1px solid transparent;
+      border-radius: var(--r-sm);
+      cursor: pointer;
+      transition: background-color var(--t-fast) var(--ease-out),
+                  border-color var(--t-fast) var(--ease-out),
+                  transform var(--t-fast) var(--ease-snap);
+    }
+    .vc-server:hover { background: var(--bg-raised); border-color: var(--border); }
+    .vc-server:active { transform: scale(0.99); }
+    .vc-server.is-active { background: rgba(139, 92, 246, 0.08); border-color: var(--border-glow); }
+    .vc-code {
+      font-family: var(--font-mono); font-size: 12px; font-weight: 700;
+      color: var(--accent-light); background: var(--bg-sunken);
+      border: 1px solid var(--border); border-radius: var(--r-xs);
+      padding: 6px 0; text-align: center;
+    }
+    .vc-server-meta { min-width: 0; }
+    .vc-server-meta b { font-size: 13px; display: block; }
+    .vc-server-meta small { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+    .vc-server-side { display: flex; align-items: center; gap: var(--sp-3); }
+    .vc-badges { display: flex; gap: 4px; }
+
+    .vc-profile {
+      display: flex; align-items: center; gap: var(--sp-3);
+      width: 100%; text-align: left;
+      padding: var(--sp-3);
+      background: transparent; border: 1px solid transparent; border-radius: var(--r-sm);
+      color: var(--text-primary); cursor: pointer; font-family: var(--font-body);
+      transition: background-color var(--t-fast) var(--ease-out),
+                  border-color var(--t-fast) var(--ease-out),
+                  transform var(--t-fast) var(--ease-snap);
+    }
+    .vc-profile:hover { background: var(--bg-raised); border-color: var(--border); }
+    .vc-profile:active { transform: scale(0.98); }
+    .vc-profile-ic {
+      width: 34px; height: 34px; border-radius: var(--r-sm); flex: none;
+      background: rgba(139, 92, 246, 0.12); border: 1px solid rgba(139, 92, 246, 0.35);
+      color: var(--accent-light); display: inline-flex; align-items: center; justify-content: center;
+    }
+    .vc-profile-ic svg { width: 17px; height: 17px; }
+    .vc-profile b { font-size: 13px; display: block; }
+    .vc-profile small { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+    .vc-profile > svg { width: 15px; height: 15px; color: var(--text-dim); margin-left: auto; flex: none; }
+
+    .vc-note { font-size: 12px; color: var(--text-dim); font-family: var(--font-mono); }
+
+    /* ---- responsive: sidebar becomes a top rail under 960px ---- */
+    @media (max-width: 960px) {
+      .vc-shell { grid-template-columns: 1fr; }
+      .vc-side {
+        position: sticky; height: auto; flex-direction: row; align-items: center;
+        border-right: 0; border-bottom: 1px solid var(--border);
+        padding: var(--sp-2) var(--sp-3); overflow-x: auto; z-index: 30;
+      }
+      .vc-nav { flex-direction: row; margin-top: 0; }
+      .vc-nav .th-navitem { width: auto; white-space: nowrap; }
+      .vc-nav .th-navitem span.lbl { display: none; }
+      .vc-side-foot, .vc-brand small { display: none; }
+      .vc-hero { grid-template-columns: 1fr; }
+      .vc-hero-stats { grid-template-columns: repeat(2, 1fr); }
+      .vc-panels { grid-template-columns: 1fr; }
+      .vc-body { padding: var(--sp-4); }
+    }
+  </style>
+</head>
+<body class="th-dotgrid">
+
+  <!-- icon sprite: 24px stroke icons, currentColor -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-bolt" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></symbol>
+    <symbol id="i-power" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 3v8"/><path d="M6.3 6.3a8 8 0 1 0 11.4 0"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l7 3v5c0 5-3.5 8-7 9-3.5-1-7-4-7-9V6l7-3z"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14 0 18M12 3c-3 3.5-3 14 0 18"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="7" y="2" width="10" height="20" rx="2.5"/><path d="M11 18.5h2"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 8h9M17 8h3M4 16h3M11 16h9"/><circle cx="15" cy="8" r="2"/><circle cx="9" cy="16" r="2"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 6l6 6-6 6"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></symbol>
+    <symbol id="i-zap" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M13 2 4 14h6l-1 8 9-12h-6l1-8z"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="i-brief" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></symbol>
+  </svg>
+
+  <div class="vc-shell">
+    <!-- ============ fixed left sidebar ============ -->
+    <aside class="vc-side" aria-label="Primary">
+      <div class="vc-brand">
+        <span class="vc-brand-mark"><svg><use href="#i-bolt"/></svg></span>
+        <div><b>PHANTOM</b><small>STEALTH NETWORK</small></div>
+      </div>
+      <nav class="vc-nav">
+        <button class="th-navitem th-navitem-on"><svg><use href="#i-home"/></svg><span class="lbl">Overview</span></button>
+        <button class="th-navitem"><svg><use href="#i-globe"/></svg><span class="lbl">Countries</span></button>
+        <button class="th-navitem"><svg><use href="#i-layers"/></svg><span class="lbl">Profiles</span></button>
+        <button class="th-navitem"><svg><use href="#i-phone"/></svg><span class="lbl">Phone Sync</span></button>
+        <button class="th-navitem"><svg><use href="#i-sliders"/></svg><span class="lbl">Settings</span></button>
+      </nav>
+      <div class="vc-side-foot">
+        <div class="th-row">
+          <span class="th-pulse idle" id="hubDot"></span>
+          <span class="th-mono th-dim" style="font-size:11px" id="hubLabel">hub · checking…</span>
+        </div>
+        <span class="th-mono th-dim" style="font-size:11px">client v3.0 · web</span>
+      </div>
+    </aside>
+
+    <!-- ============ main column ============ -->
+    <div class="vc-main">
+      <header class="vc-top">
+        <h1>Connection</h1>
+        <span class="th-chip" id="statusPill"><span class="th-pulse idle" id="statusDot"></span><span id="statusPillTxt">Unprotected</span></span>
+        <div class="vc-top-right">
+          <button class="th-chip" id="nsChip" aria-pressed="false" title="Toggle NetShield">
+            <svg><use href="#i-shield"/></svg><span id="nsLabel">NetShield off</span>
+          </button>
+          <span class="th-mono th-dim" style="font-size:12px" id="hubMs" title="Hub round-trip">— ms</span>
+          <button class="vc-iconbtn" title="Settings" aria-label="Settings"><svg><use href="#i-sliders"/></svg></button>
+        </div>
+      </header>
+
+      <main class="vc-body">
+
+        <!-- ============ connection hero ============ -->
+        <section class="th-card vc-hero" id="heroCard" aria-label="Connection status">
+          <div class="vc-hero-left">
+            <button class="th-power" id="powerBtn" aria-pressed="false" aria-label="Connect or disconnect">
+              <svg><use href="#i-power"/></svg>
+            </button>
+            <div class="vc-status">
+              <h2 id="statusTitle">You are exposed</h2>
+              <p class="th-muted" id="statusSub">Traffic is visible to your network.</p>
+              <div class="vc-iprow">
+                <span class="th-badge" id="ipPill">ip · —</span>
+                <span class="th-badge th-badge-amethyst" id="serverPill">no server</span>
+              </div>
+            </div>
+          </div>
+          <div class="vc-hero-stats">
+            <div class="th-stat"><span class="k">Session</span><span class="v" id="statTime">00:00</span></div>
+            <div class="th-stat"><span class="k">Protocol</span><span class="v" id="statProto">—</span></div>
+            <div class="th-stat"><span class="k">Server load</span><span class="v th-row" style="gap:8px"><span class="th-loadbar" style="flex:1"><i id="statLoadBar" style="width:0%"></i></span><span id="statLoad">—</span></span></div>
+            <div class="th-stat"><span class="k">Data up / down</span><span class="v" id="statData">0 / 0 MB</span></div>
+          </div>
+        </section>
+
+        <!-- ============ fleet + profiles ============ -->
+        <div class="vc-panels">
+          <section class="th-card" aria-label="Server fleet">
+            <div class="vc-panel-head">
+              <h3>Server fleet</h3>
+              <button class="th-chip th-chip-on" data-f="all">All</button>
+              <button class="th-chip" data-f="streaming">Streaming</button>
+              <button class="th-chip" data-f="p2p">P2P</button>
+              <button class="th-chip" data-f="core">Secure Core</button>
+              <button class="th-chip" data-f="tor">Tor</button>
+            </div>
+            <div id="fleetRows" class="th-col" style="gap:2px"></div>
+          </section>
+
+          <section class="th-card" aria-label="Connection profiles">
+            <div class="vc-panel-head"><h3>Profiles</h3></div>
+            <div id="profileRows" class="th-col" style="gap:2px"></div>
+          </section>
+        </div>
+
+        <p class="vc-note">fleet figures are seeded locally · wire GET /api/servers on your hub for live data</p>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    "use strict";
+    /* Seeded demo fleet — replace with GET /api/servers from your hub for live data. */
+    const SERVERS = [
+      { code: "US", country: "United States", city: "New York",    load: 32, ms: 48,  feat: ["streaming", "p2p"] },
+      { code: "DE", country: "Germany",       city: "Frankfurt",   load: 45, ms: 62,  feat: ["streaming"] },
+      { code: "NL", country: "Netherlands",  city: "Amsterdam",    load: 28, ms: 55,  feat: ["p2p", "tor"] },
+      { code: "CH", country: "Switzerland",  city: "Zurich",       load: 61, ms: 71,  feat: ["core"] },
+      { code: "SG", country: "Singapore",     city: "Singapore",   load: 52, ms: 118, feat: ["streaming", "p2p"] },
+      { code: "JP", country: "Japan",         city: "Tokyo",       load: 38, ms: 132, feat: ["streaming"] },
+      { code: "SE", country: "Sweden",        city: "Stockholm",   load: 24, ms: 84,  feat: ["core", "tor"] },
+      { code: "IN", country: "India",         city: "Mumbai",      load: 71, ms: 22,  feat: ["p2p"] },
+    ];
+    const PROFILES = [
+      { name: "Streaming",       sub: "US · WireGuard UDP",   icon: "i-play" },
+      { name: "Gaming",          sub: "DE · lowest latency",  icon: "i-zap" },
+      { name: "Anti-censorship", sub: "WG-TLS · obfuscated",  icon: "i-eye" },
+      { name: "Max security",    sub: "Secure Core · CH→SE",  icon: "i-shield" },
+      { name: "Work",            sub: "Split tunnel · office", icon: "i-brief" },
+    ];
+    const FEAT_BADGE = {
+      streaming: ["Streaming", "th-badge-cyan"],
+      p2p:       ["P2P", ""],
+      core:      ["Secure Core", "th-badge-amethyst"],
+      tor:       ["Tor", "th-badge-ok"],
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const state = { connected: false, server: null, t0: 0, timer: null, up: 0, down: 0, filter: "all" };
+
+    function loadClass(load) { return load >= 70 ? "hot" : load >= 45 ? "warm" : ""; }
+
+    function renderFleet() {
+      const rows = $("fleetRows");
+      rows.innerHTML = "";
+      SERVERS
+        .filter((s) => state.filter === "all" || s.feat.includes(state.filter))
+        .forEach((s) => {
+          const el = document.createElement("div");
+          el.className = "vc-server" + (state.server === s ? " is-active" : "");
+          el.setAttribute("role", "button");
+          el.setAttribute("tabindex", "0");
+          el.innerHTML =
+            '<span class="vc-code">' + s.code + "</span>" +
+            '<div class="vc-server-meta"><b>' + s.country + " · " + s.city + "</b>" +
+            '<small>' + s.ms + " ms · " +
+            s.feat.map((f) => FEAT_BADGE[f][0]).join(" · ") + "</small></div>" +
+            '<div class="vc-server-side">' +
+              '<span class="th-loadbar ' + loadClass(s.load) + '"><i style="width:' + s.load + '%"></i></span>' +
+              '<span class="vc-badges">' +
+                s.feat.map((f) => '<span class="th-badge ' + FEAT_BADGE[f][1] + '">' + FEAT_BADGE[f][0] + "</span>").join("") +
+              "</span>" +
+              '<button class="th-btn th-btn-ghost th-btn-sm">' +
+                (state.server === s && state.connected ? "Active" : "Connect") + "</button>" +
+            "</div>";
+          const go = () => connect(s);
+          el.addEventListener("click", go);
+          el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+          rows.appendChild(el);
+        });
+    }
+
+    function renderProfiles() {
+      const rows = $("profileRows");
+      rows.innerHTML = "";
+      PROFILES.forEach((p) => {
+        const b = document.createElement("button");
+        b.className = "vc-profile";
+        b.innerHTML =
+          '<span class="vc-profile-ic"><svg><use href="#' + p.icon + '"/></svg></span>' +
+          "<span><b>" + p.name + "</b><small>" + p.sub + "</small></span>" +
+          '<svg><use href="#i-chev"/></svg>';
+        b.addEventListener("click", () => {
+          const target = SERVERS.find((s) => p.sub.includes(s.code)) || SERVERS[0];
+          connect(target);
+          document.getElementById("heroCard").scrollIntoView({ behavior: "smooth", block: "center" });
+        });
+        rows.appendChild(b);
+      });
+    }
+
+    function fmtTime(sec) {
+      const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+      const s = String(sec % 60).padStart(2, "0");
+      return (h === "00" ? m : h + ":" + m) + ":" + s;
+    }
+
+    function connect(server) {
+      state.server = server;
+      if (!state.connected) {
+        state.connected = true;
+        state.t0 = Date.now();
+        state.up = 0; state.down = 0;
+        state.timer = setInterval(() => {
+          $("statTime").textContent = fmtTime(Math.floor((Date.now() - state.t0) / 1000));
+          state.up += 0.4 + Math.random() * 1.2;
+          state.down += 1.5 + Math.random() * 4;
+          $("statData").textContent = state.up.toFixed(0) + " / " + state.down.toFixed(0) + " MB";
+        }, 1000);
+      }
+      $("powerBtn").classList.add("is-on");
+      $("powerBtn").setAttribute("aria-pressed", "true");
+      $("heroCard").classList.add("is-live");
+      $("statusDot").className = "th-pulse ok";
+      $("statusPillTxt").textContent = "Protected";
+      $("statusTitle").textContent = "You are protected";
+      $("statusSub").textContent = "Traffic is routed through an encrypted tunnel.";
+      $("ipPill").textContent = "ip · 185.232." + (10 + Math.floor(Math.random() * 200)) + "." + (2 + Math.floor(Math.random() * 250));
+      $("serverPill").textContent = server.code + " · " + server.city;
+      $("statProto").textContent = "WG-UDP";
+      $("statLoad").textContent = server.load + "%";
+      $("statLoadBar").style.width = server.load + "%";
+      $("statLoadBar").parentElement.className = "th-loadbar " + loadClass(server.load);
+      renderFleet();
+    }
+
+    function disconnect() {
+      state.connected = false;
+      clearInterval(state.timer);
+      $("powerBtn").classList.remove("is-on");
+      $("powerBtn").setAttribute("aria-pressed", "false");
+      $("heroCard").classList.remove("is-live");
+      $("statusDot").className = "th-pulse idle";
+      $("statusPillTxt").textContent = "Unprotected";
+      $("statusTitle").textContent = "You are exposed";
+      $("statusSub").textContent = "Traffic is visible to your network.";
+      $("ipPill").textContent = "ip · —";
+      $("serverPill").textContent = "no server";
+      $("statTime").textContent = "00:00";
+      $("statProto").textContent = "—";
+      $("statLoad").textContent = "—";
+      $("statLoadBar").style.width = "0%";
+      $("statData").textContent = "0 / 0 MB";
+      renderFleet();
+    }
+
+    $("powerBtn").addEventListener("click", () => {
+      if (state.connected) disconnect();
+      else connect(state.server || SERVERS[0]);
+    });
+
+    document.querySelectorAll("[data-f]").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        document.querySelectorAll("[data-f]").forEach((c) => c.classList.remove("th-chip-on"));
+        chip.classList.add("th-chip-on");
+        state.filter = chip.getAttribute("data-f");
+        renderFleet();
+      });
+    });
+
+    const NS_LEVELS = ["off", "malware", "ads+malware", "max"];
+    let nsIdx = 0;
+    $("nsChip").addEventListener("click", () => {
+      nsIdx = (nsIdx + 1) % NS_LEVELS.length;
+      $("nsLabel").textContent = "NetShield " + NS_LEVELS[nsIdx];
+      $("nsChip").classList.toggle("th-chip-on", nsIdx > 0);
+      $("nsChip").setAttribute("aria-pressed", String(nsIdx > 0));
+    });
+
+    /* hub reachability — silent when the hub is not running */
+    (async () => {
+      try {
+        const t0 = performance.now();
+        const r = await fetch("/api/status", { cache: "no-store" });
+        if (!r.ok) throw new Error("down");
+        const ms = Math.round(performance.now() - t0);
+        $("hubDot").className = "th-pulse live";
+        $("hubLabel").textContent = "hub · local";
+        $("hubMs").textContent = ms + " ms";
+      } catch (_) {
+        $("hubDot").className = "th-pulse idle";
+        $("hubLabel").textContent = "hub · offline";
+      }
+    })();
+
+    renderFleet();
+    renderProfiles();
+  </script>
+</body>
+</html>
