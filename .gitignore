@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+package-lock.json
+
+# Build directories & binaries
+android-app/build/
+android-app/gen/
+tor-daemon/
+*.apk
+*.log
+
+# Profiles & Caches
+chrome-profile/
+chrome-chameleon-profile/
+.opencode/
+*.png
+.env

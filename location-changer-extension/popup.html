@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body {
+      width: 290px;
+      padding: 16px;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #0b1d24;
+      color: #eaf3f1;
+      margin: 0;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+      border-bottom: 1px solid #1e3d48;
+      padding-bottom: 8px;
+    }
+    h3 { font-size: 14px; font-weight: 700; color: #fff; margin: 0; }
+    h3 span { color: #5ce1b1; }
+    .badge {
+      background: #143e49;
+      border: 1px solid #5ce1b1;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      color: #5ce1b1;
+      font-weight: 600;
+    }
+    .info-card {
+      background: #132f3a;
+      border: 1px solid #224754;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 12px;
+    }
+    .label { font-size: 10px; color: #8ba5a4; text-transform: uppercase; letter-spacing: 0.5px; }
+    .city-name { font-size: 16px; font-weight: 700; color: #fff; margin: 4px 0 2px 0; }
+    .coords { font-size: 11px; font-family: monospace; color: #5ce1b1; }
+    .fortress-status {
+      font-size: 11px;
+      color: #5ce1b1;
+      margin-top: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 600;
+    }
+    .btn {
+      display: block;
+      width: 100%;
+      background: #5ce1b1;
+      color: #102a34;
+      text-align: center;
+      padding: 9px 0;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 700;
+      font-size: 12px;
+      border: none;
+      cursor: pointer;
+      box-sizing: border-box;
+    }
+    .btn:hover { background: #4ecfa0; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h3>OmniRush <span>Chameleon</span></h3>
+    <span class="badge" id="countdown-badge">● 5-Min Auto</span>
+  </div>
+  <div class="info-card">
+    <div class="label">ACTIVE SPOOFED JURISDICTION</div>
+    <div class="city-name" id="city-text">Loading...</div>
+    <div class="coords" id="coords-text">Calculating...</div>
+    <div class="fortress-status">🛡️ 5-Layer Privacy Fortress Active</div>
+  </div>
+  <a href="http://127.0.0.1:3300" target="_blank" class="btn">Open Full Web Dashboard</a>
+
+  <script src="popup.js"></script>
+</body>
+</html>

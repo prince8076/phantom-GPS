@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>phantom vpn · stealth location &amp; privacy fortress</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/qrcode.min.js"></script>
+  <style>
+    :root {
+      --bg: #06080d;
+      --card-bg: rgba(14, 19, 29, 0.75);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(26, 36, 54, 0.85);
+      --neon-cyan: #00f0ff;
+      --neon-teal: #00f2a9;
+      --neon-glow: rgba(0, 240, 255, 0.35);
+      --neon-crimson: #ff3b69;
+      --text-primary: #ffffff;
+      --text-muted: #8a99ad;
+      --text-dim: #4d5b6e;
+      --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+      --font-mono: 'JetBrains Mono', monospace;
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(circle at 50% 15%, rgba(0, 240, 255, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 85% 85%, rgba(0, 242, 169, 0.04) 0%, transparent 50%);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* GLASS CONTAINER */
+    .app-viewport {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px 28px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* TOP SLEEK NAVBAR */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 24px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      gap: 12px;
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .brand-icon-box {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(0, 242, 169, 0.05));
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+      flex-shrink: 0;
+    }
+
+    .brand-icon-box img {
+      width: 28px;
+      height: 28px;
+    }
+
+    .brand-titles h1 {
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.3px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-titles h1 span {
+      background: linear-gradient(90deg, var(--neon-cyan), var(--neon-teal));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-titles p {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .pill-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 14px;
+      border-radius: 40px;
+      background: rgba(0, 242, 169, 0.08);
+      border: 1px solid rgba(0, 242, 169, 0.25);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--neon-teal);
+    }
+
+    .pulse-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--neon-teal);
+      box-shadow: 0 0 10px var(--neon-teal);
+      animation: pulse 2s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .btn-sync {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 40px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      color: var(--text-primary);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-sync:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-admin-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 7px 14px;
+      border-radius: 40px;
+      background: rgba(0, 240, 255, 0.1);
+      border: 1px solid rgba(0, 240, 255, 0.35);
+      color: var(--neon-cyan);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-admin-pill:hover {
+      background: var(--neon-cyan);
+      color: #050a10;
+      box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    }
+
+    /* MAIN DRIBBBLE VPN GRID: 3-PANEL COMPOSITION */
+    .vpn-stage {
+      display: grid;
+      grid-template-columns: 360px 1fr 340px;
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1200px) {
+      .vpn-stage { grid-template-columns: 340px 1fr; }
+    }
+
+    .glass-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      padding: 24px;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* CENTER HERO PANEL: DRIBBBLE NEON POWER BUTTON & RADAR */
+    .hero-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      min-height: 480px;
+      background: radial-gradient(circle at 50% 50%, rgba(0, 240, 255, 0.06) 0%, rgba(14, 19, 29, 0.8) 70%);
+    }
+
+    .radar-orbit-1 {
+      position: absolute;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      border: 1px dashed rgba(0, 240, 255, 0.12);
+      animation: rotate 60s linear infinite;
+      pointer-events: none;
+    }
+
+    .radar-orbit-2 {
+      position: absolute;
+      width: 440px;
+      height: 440px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.03);
+      pointer-events: none;
+    }
+
+    @keyframes rotate {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* ICONIC DRIBBBLE NEON POWER BUTTON */
+    .power-button-wrap {
+      position: relative;
+      z-index: 10;
+      margin: 16px 0;
+    }
+
+    .power-button-ring {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #121927, #080c14);
+      border: 2px solid rgba(0, 240, 255, 0.3);
+      box-shadow: 
+        0 0 40px rgba(0, 240, 255, 0.25),
+        inset 0 2px 4px rgba(255, 255, 255, 0.15),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .power-button-ring:hover {
+      transform: scale(1.04);
+      border-color: var(--neon-cyan);
+      box-shadow: 
+        0 0 60px rgba(0, 240, 255, 0.45),
+        0 0 100px rgba(0, 240, 255, 0.15),
+        inset 0 0 20px rgba(0, 240, 255, 0.4);
+    }
+
+    .power-button-ring.connected {
+      border-color: var(--neon-cyan);
+      background: radial-gradient(circle, #0e202e 0%, #071018 100%);
+      box-shadow: 
+        0 0 60px rgba(0, 240, 255, 0.5),
+        0 0 120px rgba(0, 240, 255, 0.2),
+        inset 0 0 25px rgba(0, 240, 255, 0.5);
+    }
+
+    .power-svg {
+      width: 60px;
+      height: 60px;
+      fill: none;
+      stroke: var(--neon-cyan);
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      filter: drop-shadow(0 0 8px var(--neon-cyan));
+      transition: all 0.3s;
+    }
+
+    .power-button-ring:active {
+      transform: scale(0.97);
+    }
+
+    .power-status-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.5px;
+      margin-top: 10px;
+      font-family: var(--font-mono);
+      text-align: center;
+    }
+
+    .power-hint {
+      font-size: 11px;
+      color: var(--text-dim);
+      font-family: var(--font-mono);
+      margin-top: 4px;
+    }
+
+    /* TELEMETRY SPEED CARDS (DRIBBBLE FLOATING BADGES) */
+    .metrics-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+      width: 100%;
+      margin-top: 24px;
+      z-index: 5;
+    }
+
+    .metric-pill {
+      background: rgba(8, 12, 18, 0.7);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .metric-icon-box {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      background: rgba(0, 240, 255, 0.08);
+      border: 1px solid rgba(0, 240, 255, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .metric-data {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .metric-data .metric-title {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .metric-data .metric-num {
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      font-family: var(--font-mono);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* LEFT PANEL: ACTIVE SERVER & LIVE ROUTE SIMULATOR */
+    .server-card {
+      background: linear-gradient(180deg, rgba(16, 24, 38, 0.8) 0%, rgba(9, 13, 20, 0.9) 100%);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 16px;
+      margin-bottom: 18px;
+    }
+
+    .server-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .server-eyebrow {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--neon-cyan);
+      letter-spacing: 0.6px;
+      text-transform: lowercase;
+    }
+
+    .server-flag-city {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .server-flag {
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+
+    .server-city-name {
+      font-size: 18px;
+      font-weight: 800;
+      color: #fff;
+      letter-spacing: -0.3px;
+      line-height: 1.2;
+    }
+
+    .server-meta-tag {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+      margin-top: 3px;
+    }
+
+    /* ROUTE SIMULATOR CONTROLS */
+    .form-label {
+      font-size: 10px;
+      font-family: var(--font-mono);
+      color: var(--text-dim);
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .input-vpn {
+      width: 100%;
+      background: rgba(6, 10, 16, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      color: #fff;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .input-vpn:focus {
+      border-color: var(--neon-cyan);
+      box-shadow: 0 0 14px rgba(0, 240, 255, 0.2);
+    }
+
+    .select-vpn {
+      width: 100%;
+      background: rgba(6, 10, 16, 0.85);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      color: #fff;
+      padding: 10px 12px;
+      font-size: 12px;
+      font-family: var(--font-mono);
+      outline: none;
+      cursor: pointer;
+    }
+
+    .btn-gradient {
+      width: 100%;
+      background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-teal) 100%);
+      color: #050a10;
+      border: none;
+      border-radius: 12px;
+      padding: 11px;
+      font-size: 12px;
+      font-weight: 800;
+      font-family: var(--font-sans);
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0, 240, 255, 0.3);
+      transition: all 0.2s;
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 26px rgba(0, 240, 255, 0.45);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      color: var(--text-primary);
+      border-radius: 10px;
+      padding: 9px 12px;
+      font-size: 11px;
+      font-family: var(--font-mono);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    /* RIGHT PANEL: INTERACTIVE WORLD MAP & NODE LIST */
+    .map-frame {
+      height: 220px;
+      width: 100%;
+      border-radius: 14px;
+      border: 1px solid var(--card-border);
+      overflow: hidden;
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    #live-map {
+      height: 100%;
+      width: 100%;
+      background: #000;
+    }
+
+    .node-scroll-list {
+      flex: 1;
+      overflow-y: auto;
+      max-height: 340px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-right: 4px;
+    }
+
+    .node-scroll-list::-webkit-scrollbar { width: 4px; }
+    .node-scroll-list::-webkit-scrollbar-thumb {
+      background: var(--card-border);
+      border-radius: 4px;
+    }
+
+    .node-item-card {
+      background: rgba(8, 12, 18, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .node-item-card:hover {
+      border-color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.05);
+      transform: translateX(2px);
+    }
+
+    .node-item-card.active {
+      border-color: var(--neon-cyan);
+      background: rgba(0, 240, 255, 0.12);
+      box-shadow: inset 0 0 12px rgba(0, 240, 255, 0.15);
+    }
+
+    .node-meta-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .node-item-flag { font-size: 20px; }
+    .node-item-city { font-size: 13px; font-weight: 700; color: #fff; }
+    .node-item-country { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); }
+    .node-item-ping {
+      font-size: 11px;
+      font-family: var(--font-mono);
+      color: var(--neon-teal);
+      background: rgba(0, 242, 169, 0.08);
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    /* AUTOCOMPLETE DROPDOWN */
+    .autocomplete-list {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #0d131f;
+      border: 1px solid var(--neon-cyan);
+      border-radius: 8px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+      z-index: 1000;
+      max-height: 200px;
+      overflow-y: auto;
+      display: none;
+      margin-top: 4px;
+    }
+
+    .autocomplete-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      font-size: 12px;
+    }
+
+    .autocomplete-item:hover {
+      background: rgba(0, 240, 255, 0.12);
+    }
+
+    .ac-title { font-weight: 700; color: #fff; }
+    .ac-desc { font-size: 11px; color: var(--text-dim); }
+
+    /* AUDIT & DEFENSE STRIP */
+    .bottom-strip {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) {
+      .bottom-strip { grid-template-columns: 1fr; }
+    }
+
+    .audit-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      font-family: var(--font-mono);
+    }
+
+    .audit-table th {
+      text-align: left;
+      padding: 8px 12px;
+      color: var(--text-dim);
+      font-weight: 600;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .audit-table td {
+      padding: 9px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+    }
+
+    /* ADMIN & USERS SECTION */
+    .admin-section {
+      background: var(--card-bg);
+      border: 1px solid rgba(0, 240, 255, 0.25);
+      border-radius: var(--radius);
+      padding: 24px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      margin-top: 6px;
+    }
+
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .admin-badge {
+      background: rgba(0, 240, 255, 0.12);
+      border: 1px solid var(--neon-cyan);
+      color: var(--neon-cyan);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .users-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      font-family: var(--font-mono);
+    }
+
+    .users-table th {
+      text-align: left;
+      padding: 10px 12px;
+      color: var(--text-dim);
+      font-weight: 600;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .users-table td {
+      padding: 10px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      color: #fff;
+    }
+
+    /* RESPONSIVE BREAKPOINT FOR MOBILE (360px - 860px) */
+    @media (max-width: 860px) {
+      .app-viewport {
+        padding: 10px 12px 30px;
+        gap: 12px;
+      }
+
+      header {
+        padding: 12px 14px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+
+      .nav-actions {
+        justify-content: space-between;
+        width: 100%;
+      }
+
+      .vpn-stage {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      /* Hero Power Center on top */
+      .hero-center {
+        order: -1;
+        min-height: 330px;
+        padding: 18px 12px;
+      }
+
+      .radar-orbit-1 { width: 220px; height: 220px; }
+      .radar-orbit-2 { width: 280px; height: 280px; }
+
+      .power-button-ring {
+        width: 130px;
+        height: 130px;
+      }
+
+      .power-svg {
+        width: 46px;
+        height: 46px;
+      }
+
+      .metrics-bar {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 6px;
+        margin-top: 14px;
+      }
+
+      .metric-pill {
+        padding: 8px 10px;
+        gap: 6px;
+      }
+
+      .metric-icon-box {
+        width: 26px;
+        height: 26px;
+        font-size: 11px;
+      }
+
+      .metric-data .metric-title {
+        font-size: 9px;
+      }
+
+      .metric-data .metric-num {
+        font-size: 11px;
+      }
+
+      .glass-card {
+        padding: 14px;
+      }
+
+      .map-frame {
+        height: 180px;
+      }
+
+      .node-scroll-list {
+        max-height: 220px;
+      }
+
+      .users-table {
+        font-size: 10px;
+      }
+
+      .users-table th, .users-table td {
+        padding: 6px 8px;
+      }
+    }
+
+    /* QR MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(3, 5, 8, 0.85);
+      backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s;
+    }
+
+    .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
+    .modal-card {
+      background: #0d121c;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+      border-radius: 20px;
+      padding: 26px;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(0, 240, 255, 0.15);
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      background: none;
+      border: none;
+      color: var(--text-dim);
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    #qrcode-container {
+      background: #ffffff;
+      padding: 14px;
+      border-radius: 14px;
+      display: inline-block;
+      margin: 16px 0 12px;
+      box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="app-viewport">
+    
+    <!-- TOP SLEEK HEADER -->
+    <header>
+      <div class="brand-group">
+        <div class="brand-icon-box">
+          <img src="/logo.png" alt="Phantom GPS Logo" />
+        </div>
+        <div class="brand-titles">
+          <h1>phantom <span>vpn &amp; gps spoofer</span></h1>
+          <p>stealth location tunneling · zero telemetry leak</p>
+        </div>
+      </div>
+
+      <div class="nav-actions">
+        <div class="pill-status">
+          <span class="pulse-dot"></span>
+          <span id="nav-status-text">protected &amp; active</span>
+        </div>
+
+        <button class="btn-admin-pill" id="scroll-admin-btn">
+          👥 <span id="nav-users-count">1 user</span> active
+        </button>
+
+        <button class="btn-sync" id="open-qr-btn">
+          📲 <span>sync phone &amp; apk</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- DRIBBBLE VPN MAIN STAGE -->
+    <section class="vpn-stage">
+      
+      <!-- LEFT PANEL: SERVER & ROUTE SIMULATION -->
+      <div class="glass-card">
+        
+        <!-- ACTIVE SERVER CARD -->
+        <div class="server-card">
+          <div class="server-card-header">
+            <span class="server-eyebrow">active server location</span>
+            <span id="countdown-val" style="font-size: 11px; font-family: var(--font-mono); color: var(--neon-cyan);">05:00</span>
+          </div>
+
+          <div class="server-flag-city">
+            <span class="server-flag" id="server-flag-icon">🇨🇭</span>
+            <div>
+              <div class="server-city-name" id="current-location">zurich, switzerland</div>
+              <div class="server-meta-tag" id="current-coords">lat: 47.3769, lon: 8.5417</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ROUTE SIMULATION -->
+        <div style="flex: 1; display: flex; flex-direction: column; gap: 12px;">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 12px; font-weight: 700; color: #fff; font-family: var(--font-mono);">route spoofer</span>
+            <span id="route-badge" style="display: none; font-size: 10px; font-family: var(--font-mono); color: var(--neon-teal); background: rgba(0, 242, 169, 0.1); padding: 2px 8px; border-radius: 10px;">moving</span>
+          </div>
+
+          <div style="position: relative;">
+            <label class="form-label">origin location</label>
+            <input type="text" id="route-origin" class="input-vpn" placeholder="e.g. Uttam Nagar, Delhi" value="Uttam Nagar, Delhi" autocomplete="off" />
+            <div id="origin-autocomplete" class="autocomplete-list"></div>
+          </div>
+
+          <div style="position: relative;">
+            <label class="form-label">destination location</label>
+            <input type="text" id="route-dest" class="input-vpn" placeholder="e.g. DESU Colony, Janakpuri" value="DESU Colony, Janakpuri, Delhi" autocomplete="off" />
+            <div id="dest-autocomplete" class="autocomplete-list"></div>
+          </div>
+
+          <div>
+            <label class="form-label">travel mode</label>
+            <select id="route-mode" class="select-vpn">
+              <option value="foot">🚶 walking (5 km/h)</option>
+              <option value="bicycle">🚲 bicycle (18 km/h)</option>
+              <option value="vehicle" selected>🚗 vehicle (60 km/h)</option>
+              <option value="flight">✈️ flight (500 km/h)</option>
+            </select>
+          </div>
+
+          <div style="display: flex; gap: 8px; margin-top: 6px;">
+            <button class="btn-gradient" id="btn-start-route" style="flex: 1;">▶ start route</button>
+            <button class="btn-secondary" id="btn-stop-route" style="display: none;">⏹</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- CENTER PANEL: THE ICONIC DRIBBBLE NEON POWER BUTTON -->
+      <div class="glass-card hero-center">
+        
+        <div class="radar-orbit-1"></div>
+        <div class="radar-orbit-2"></div>
+
+        <div class="power-button-wrap">
+          <div class="power-button-ring connected" id="master-vpn-btn">
+            <svg class="power-svg" viewBox="0 0 24 24">
+              <path d="M18.36 6.64a9 9 0 1 1-12.73 0"></path>
+              <line x1="12" y1="2" x2="12" y2="12"></line>
+            </svg>
+          </div>
+        </div>
+
+        <div class="power-status-label" id="power-status-text">connected &amp; secured</div>
+        <div class="power-hint" id="power-hint-text">system location actively overridden</div>
+
+        <!-- TELEMETRY METRIC PILLS (RESPONSIVE) -->
+        <div class="metrics-bar">
+          <div class="metric-pill">
+            <div class="metric-icon-box">🛡️</div>
+            <div class="metric-data">
+              <div class="metric-title">outbound ip</div>
+              <div class="metric-num" id="current-ip">185.220.101.98</div>
+            </div>
+          </div>
+
+          <div class="metric-pill">
+            <div class="metric-icon-box">⚡</div>
+            <div class="metric-data">
+              <div class="metric-title">hop cadence</div>
+              <div class="metric-num" id="telemetry-speed">300s</div>
+            </div>
+          </div>
+
+          <div class="metric-pill">
+            <div class="metric-icon-box">👥</div>
+            <div class="metric-data">
+              <div class="metric-title">active users</div>
+              <div class="metric-num" id="hero-users-num" style="color: var(--neon-teal);">1 device</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT PANEL: INTERACTIVE WORLD RADAR & SERVER NODES -->
+      <div class="glass-card">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+          <span style="font-size: 12px; font-weight: 700; color: #fff; font-family: var(--font-mono);">stealth radar</span>
+          <a id="gmaps-direct-link" href="https://www.google.com/maps" target="_blank" style="color: var(--neon-cyan); font-size: 11px; text-decoration: none; font-family: var(--font-mono);">open map ↗</a>
+        </div>
+
+        <div class="map-frame">
+          <div id="live-map"></div>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+          <span style="font-size: 12px; font-weight: 700; color: #fff; font-family: var(--font-mono);">server pool</span>
+          <button class="btn-secondary" id="manual-rotate-btn" style="padding: 4px 10px; font-size: 11px;">⚡ random hop</button>
+        </div>
+
+        <div class="node-scroll-list" id="node-list-container">
+          <!-- Dynamically populated servers -->
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- ADMIN PANEL: CONNECTED USERS & ACTIVE LOCATION DEVICES -->
+    <section class="admin-section" id="admin-panel">
+      <div class="admin-header">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <span style="font-size: 14px; font-weight: 800; color: #fff; letter-spacing: -0.2px;">👥 admin control: connected devices</span>
+          <span class="admin-badge" id="admin-badge-count">1 device receiving gps</span>
+        </div>
+        <div style="font-size: 11px; color: var(--text-dim); font-family: var(--font-mono);">
+          all listed devices are actively receiving synchronized virtual coordinates
+        </div>
+      </div>
+
+      <div style="overflow-x: auto;">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>device / platform</th>
+              <th>client address</th>
+              <th>status</th>
+              <th>last sync</th>
+              <th>target jurisdiction</th>
+            </tr>
+          </thead>
+          <tbody id="users-tbody">
+            <tr>
+              <td colspan="5" style="text-align: center; color: var(--text-dim); padding: 16px 0;">discovering connected phones &amp; browsers...</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- BOTTOM STRIP: AUDIT LOG & CADENCE CONTROLS -->
+    <section class="bottom-strip">
+      
+      <!-- REAL-TIME AUDIT LOG -->
+      <div class="glass-card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+          <span style="font-size: 12px; font-weight: 700; color: #fff; font-family: var(--font-mono);">telemetry stream</span>
+          <span style="font-size: 11px; font-family: var(--font-mono); color: var(--neon-teal);">● live feed</span>
+        </div>
+
+        <div style="max-height: 160px; overflow-y: auto;">
+          <table class="audit-table">
+            <thead>
+              <tr>
+                <th>timestamp</th>
+                <th>jurisdiction</th>
+                <th>exit ip</th>
+                <th>coordinates</th>
+                <th>trigger reason</th>
+              </tr>
+            </thead>
+            <tbody id="history-tbody">
+              <tr><td colspan="5" style="text-align: center; color: var(--text-dim); padding: 14px 0;">waiting for node events...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- PRIVACY FORTRESS CONTROLS -->
+      <div class="glass-card" style="justify-content: space-between;">
+        <div>
+          <span style="font-size: 12px; font-weight: 700; color: #fff; font-family: var(--font-mono);">rotation &amp; defenses</span>
+          <p style="font-size: 11px; color: var(--text-muted); margin-top: 4px;">auto-hop exit nodes &amp; randomize device identifiers</p>
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 14px;">
+          <select id="interval-select" class="select-vpn">
+            <option value="60">every 1 minute</option>
+            <option value="180">every 3 minutes</option>
+            <option value="300" selected>every 5 minutes</option>
+            <option value="600">every 10 minutes</option>
+            <option value="1800">every 30 minutes</option>
+          </select>
+
+          <button class="btn-secondary" id="fortress-btn" style="width: 100%;">🛡️ re-harden mac &amp; telemetry</button>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <!-- QR MODAL FOR PHONE SCAN & DIRECT APK -->
+  <div class="modal-overlay" id="qr-modal">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="close-qr-btn">✕</button>
+      <h3 style="font-size: 16px; font-weight: 800; color: #fff;">📲 sync phone &amp; download apk</h3>
+      <p style="font-size: 12px; color: var(--text-muted); margin-top: 6px;">
+        scan with your android phone to link or download the vpn-style mock gps apk.
+      </p>
+
+      <div id="qrcode-container"></div>
+
+      <div style="font-size: 11px; color: var(--neon-cyan); font-family: var(--font-mono); word-break: break-all;" id="qr-link-text">
+        https://stick-collections-greeting-organic.trycloudflare.com
+      </div>
+
+      <div style="margin-top: 18px;">
+        <a id="qr-direct-download" href="/download" download="Phantom-GPS.apk" class="btn-gradient" style="display: block; text-decoration: none; text-align: center;">
+          ⬇️ direct apk download
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let map = null;
+    let marker = null;
+    let pathPolyline = null;
+    let pathPoints = [];
+    let isConnected = true;
+
+    // Initialize Sleek Dark Leaflet Map
+    function initMap(lat, lon, title) {
+      if (!map) {
+        map = L.map('live-map', { zoomControl: false }).setView([lat, lon], 13);
+        L.control.zoom({ position: 'bottomright' }).addTo(map);
+
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+          maxZoom: 19,
+          subdomains: 'abcd',
+          attribution: '© CARTO'
+        }).addTo(map);
+
+        const customIcon = L.divIcon({
+          html: `<div style="background: var(--neon-cyan); width: 14px; height: 14px; border-radius: 50%; border: 3px solid #06080d; box-shadow: 0 0 14px var(--neon-cyan);"></div>`,
+          className: 'radar-pin',
+          iconSize: [16, 16]
+        });
+
+        marker = L.marker([lat, lon], { icon: customIcon }).addTo(map).bindPopup(title);
+        pathPolyline = L.polyline([], { color: '#00f0ff', weight: 3, dashArray: '4, 4' }).addTo(map);
+      } else {
+        marker.setLatLng([lat, lon]).setPopupContent(title);
+        map.panTo([lat, lon]);
+      }
+      pathPoints.push([lat, lon]);
+      if (pathPoints.length > 50) pathPoints.shift();
+      pathPolyline.setLatLngs(pathPoints);
+    }
+
+    // QR Code Generator
+    function generateQrCode(url) {
+      const container = document.getElementById('qrcode-container');
+      container.innerHTML = '';
+      new QRCode(container, {
+        text: url,
+        width: 170,
+        height: 170,
+        colorDark: '#06080d',
+        colorLight: '#ffffff',
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    }
+
+    // Polling Dashboard Status
+    async function updateStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+
+        const node = data.currentNode;
+        const locLabel = node.country && !node.city.includes(node.country)
+          ? `${node.city}, ${node.country}`
+          : node.city;
+
+        document.getElementById('current-location').innerText = locLabel.toLowerCase();
+        document.getElementById('server-flag-icon').innerText = node.flag || '📍';
+        document.getElementById('current-coords').innerText = `lat: ${node.lat.toFixed(4)}, lon: ${node.lon.toFixed(4)}`;
+        document.getElementById('current-ip').innerText = data.verifiedPublicIp || node.virtualIp;
+
+        const mins = String(Math.floor(data.countdownSeconds / 60)).padStart(2, '0');
+        const secs = String(data.countdownSeconds % 60).padStart(2, '0');
+        document.getElementById('countdown-val').innerText = `${mins}:${secs}`;
+        document.getElementById('telemetry-speed').innerText = `${data.countdownSeconds}s`;
+
+        // Update active users
+        const userCount = typeof data.activeUserCount === 'number' ? data.activeUserCount : (data.connectedUsers ? data.connectedUsers.length : 0);
+        document.getElementById('nav-users-count').innerText = `${userCount} device${userCount === 1 ? '' : 's'}`;
+        document.getElementById('hero-users-num').innerText = `${userCount} device${userCount === 1 ? '' : 's'}`;
+        document.getElementById('admin-badge-count').innerText = `${userCount} device${userCount === 1 ? '' : 's'} receiving gps`;
+
+        renderConnectedUsers(data.connectedUsers, locLabel);
+
+        initMap(node.lat, node.lon, `${node.flag || ''} ${node.city}`);
+        renderNodePool(data.allNodes, data.currentNode.id);
+
+        const routeBadge = document.getElementById('route-badge');
+        const stopBtn = document.getElementById('btn-stop-route');
+        if (data.activeRoute) {
+          routeBadge.style.display = 'inline-block';
+          routeBadge.innerText = `moving ${data.activeRoute.progressPercent}% · ${data.activeRoute.speedKmh} km/h`;
+          stopBtn.style.display = 'inline-block';
+        } else {
+          routeBadge.style.display = 'none';
+          stopBtn.style.display = 'none';
+        }
+
+        renderHistory(data.rotationHistory);
+      } catch (e) {
+        console.error('telemetry poll error:', e);
+      }
+    }
+
+    function renderConnectedUsers(users, currentCity) {
+      const tbody = document.getElementById('users-tbody');
+      if (!users || users.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: var(--text-dim); padding: 14px 0;">no external devices detected</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = '';
+      users.forEach(u => {
+        const isApp = u.deviceType.includes('Android');
+        const badgeColor = isApp ? 'var(--neon-teal)' : 'var(--neon-cyan)';
+        const icon = isApp ? '📱' : '💻';
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <span>${icon}</span>
+              <div>
+                <div style="font-weight: 700; color: #fff;">${u.deviceType}</div>
+                <div style="font-size: 10px; color: var(--text-dim); max-width: 220px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${u.userAgent}</div>
+              </div>
+            </div>
+          </td>
+          <td style="color: var(--neon-cyan);">${u.ip}</td>
+          <td><span style="color: ${badgeColor}; font-weight: 700;">● sync active</span></td>
+          <td style="color: var(--text-muted);">${u.lastSeenFormatted}</td>
+          <td style="color: #fff; font-weight: 600;">${currentCity}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Scroll smoothly to admin section
+    document.getElementById('scroll-admin-btn').onclick = () => {
+      document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth' });
+    };
+
+    // Dribbble Master Power Button Toggle
+    const masterBtn = document.getElementById('master-vpn-btn');
+    const powerText = document.getElementById('power-status-text');
+    const powerHint = document.getElementById('power-hint-text');
+    const navText = document.getElementById('nav-status-text');
+
+    masterBtn.onclick = async () => {
+      isConnected = !isConnected;
+      if (isConnected) {
+        masterBtn.classList.add('connected');
+        powerText.innerText = 'connected & secured';
+        powerHint.innerText = 'system location actively overridden';
+        navText.innerText = 'protected & active';
+        await fetch('/api/shield', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ active: true })
+        });
+      } else {
+        masterBtn.classList.remove('connected');
+        powerText.innerText = 'disconnected';
+        powerHint.innerText = 'tap to engage stealth tunnel';
+        navText.innerText = 'standby mode';
+        await fetch('/api/shield', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ active: false })
+        });
+      }
+    };
+
+    function renderNodePool(nodes, activeId) {
+      const container = document.getElementById('node-list-container');
+      container.innerHTML = '';
+      nodes.forEach(n => {
+        const div = document.createElement('div');
+        div.className = `node-item-card ${n.id === activeId ? 'active' : ''}`;
+        div.innerHTML = `
+          <div class="node-meta-left">
+            <span class="node-item-flag">${n.flag || '📍'}</span>
+            <div>
+              <div class="node-item-city">${n.city}</div>
+              <div class="node-item-country">${n.country.toLowerCase()}</div>
+            </div>
+          </div>
+          <span class="node-item-ping">${Math.floor(Math.random() * 20 + 15)}ms</span>
+        `;
+        div.onclick = () => selectNode(n.id);
+        container.appendChild(div);
+      });
+    }
+
+    function renderHistory(history) {
+      const tbody = document.getElementById('history-tbody');
+      if (!history || history.length === 0) return;
+      tbody.innerHTML = '';
+      history.slice(0, 8).forEach(h => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td style="color: var(--text-dim);">${h.timestamp}</td>
+          <td style="font-weight: 700; color: #fff;">${h.flag || ''} ${(h.node || '').toLowerCase()}</td>
+          <td style="color: var(--neon-cyan);">${h.ip}</td>
+          <td>${h.coords}</td>
+          <td style="color: var(--text-muted);">${(h.reason || '').toLowerCase()}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function selectNode(nodeId) {
+      await fetch('/api/select-node', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nodeId })
+      });
+      updateStatus();
+    }
+
+    document.getElementById('manual-rotate-btn').onclick = async () => {
+      await fetch('/api/rotate', { method: 'POST' });
+      updateStatus();
+    };
+
+    document.getElementById('interval-select').onchange = async (e) => {
+      const seconds = parseInt(e.target.value, 10);
+      await fetch('/api/settings/interval', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ seconds, isRandom: true })
+      });
+      updateStatus();
+    };
+
+    // Geocoding Autocomplete
+    function setupAutocomplete(inputId, dropdownId) {
+      const input = document.getElementById(inputId);
+      const list = document.getElementById(dropdownId);
+      let timer;
+
+      input.addEventListener('input', () => {
+        clearTimeout(timer);
+        const query = input.value.trim();
+        if (query.length < 2) {
+          list.style.display = 'none';
+          return;
+        }
+
+        timer = setTimeout(async () => {
+          try {
+            const resp = await fetch(`/api/geocode?q=${encodeURIComponent(query)}`);
+            const data = await resp.json();
+            if (!data.results || data.results.length === 0) {
+              list.style.display = 'none';
+              return;
+            }
+
+            list.innerHTML = '';
+            data.results.forEach(item => {
+              const div = document.createElement('div');
+              div.className = 'autocomplete-item';
+              div.innerHTML = `
+                <div class="ac-title">📍 ${item.name}</div>
+                <div class="ac-desc">${item.displayName}</div>
+              `;
+              div.onclick = () => {
+                input.value = `${item.name} (${item.lat.toFixed(4)}, ${item.lon.toFixed(4)})`;
+                input.dataset.lat = item.lat;
+                input.dataset.lon = item.lon;
+                input.dataset.name = item.name;
+                list.style.display = 'none';
+              };
+              list.appendChild(div);
+            });
+            list.style.display = 'block';
+          } catch (e) {}
+        }, 300);
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!input.contains(e.target) && !list.contains(e.target)) {
+          list.style.display = 'none';
+        }
+      });
+    }
+
+    setupAutocomplete('route-origin', 'origin-autocomplete');
+    setupAutocomplete('route-dest', 'dest-autocomplete');
+
+    // Route Actions
+    document.getElementById('btn-start-route').onclick = async () => {
+      const origInput = document.getElementById('route-origin');
+      const destInput = document.getElementById('route-dest');
+      const origVal = origInput.value.trim();
+      const destVal = destInput.value.trim();
+      const mode = document.getElementById('route-mode').value;
+
+      let origin = (origInput.dataset.lat && origInput.dataset.lon)
+        ? { lat: parseFloat(origInput.dataset.lat), lon: parseFloat(origInput.dataset.lon), name: origInput.dataset.name }
+        : origVal;
+
+      let destination = (destInput.dataset.lat && destInput.dataset.lon)
+        ? { lat: parseFloat(destInput.dataset.lat), lon: parseFloat(destInput.dataset.lon), name: destInput.dataset.name }
+        : destVal;
+
+      const btn = document.getElementById('btn-start-route');
+      btn.innerText = 'calculating...';
+      btn.disabled = true;
+
+      try {
+        await fetch('/api/route/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ origin, destination, mode })
+        });
+      } catch (e) {
+      } finally {
+        btn.innerText = '▶ start route';
+        btn.disabled = false;
+        updateStatus();
+      }
+    };
+
+    document.getElementById('btn-stop-route').onclick = async () => {
+      await fetch('/api/route/stop', { method: 'POST' });
+      updateStatus();
+    };
+
+    document.getElementById('fortress-btn').onclick = async () => {
+      await fetch('/api/privacy/fortress', { method: 'POST' });
+      alert('privacy fortress hardened: mac randomized, telemetry neutralized');
+    };
+
+    // Modal controls
+    const qrModal = document.getElementById('qr-modal');
+    document.getElementById('open-qr-btn').onclick = () => {
+      let syncUrl = window.location.origin;
+      generateQrCode(syncUrl);
+      document.getElementById('qr-link-text').innerText = syncUrl;
+      document.getElementById('qr-direct-download').href = syncUrl + '/download';
+      qrModal.classList.add('open');
+    };
+    document.getElementById('close-qr-btn').onclick = () => qrModal.classList.remove('open');
+    qrModal.onclick = (e) => { if (e.target === qrModal) qrModal.classList.remove('open'); };
+
+    updateStatus();
+    setInterval(updateStatus, 1000);
+  </script>
+</body>
+</html>

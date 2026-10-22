@@ -1,0 +1,28 @@
+{
+  "manifest_version": 3,
+  "name": "OmniRush 5-Min Location & IP Chameleon",
+  "version": "2.1",
+  "description": "Overrides Google Maps and browser GPS location & IP automatically every 5 minutes",
+  "permissions": [
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.google.com/*",
+        "*://*.google.co.in/*",
+        "*://*/*"
+      ],
+      "js": ["content.js"],
+      "run_at": "document_start",
+      "world": "MAIN",
+      "all_frames": true
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html"
+  }
+}

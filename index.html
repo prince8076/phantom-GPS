@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="CyberSecuria security operations dashboard" />
+    <title>CyberSecuria · Security operations</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand"><span class="brand-mark">✦</span><span>cyber<span class="brand-accent">securia</span></span></div>
+        <div class="workspace-switcher"><span class="workspace-dot"></span><span>Northstar Labs</span><span class="chevron">⌄</span></div>
+        <nav class="nav" aria-label="Main navigation">
+          <p class="nav-label">Workspace</p>
+          <button class="nav-item active" data-view="overview"><span>◈</span> Overview</button>
+          <button class="nav-item" data-view="incidents"><span>◉</span> Incidents <b class="count-badge">4</b></button>
+          <button class="nav-item" data-view="assets"><span>▦</span> Assets</button>
+          <button class="nav-item" data-view="compliance"><span>✓</span> Compliance</button>
+          <button class="nav-item" data-view="geoip"><span>🌐</span> GeoIP Chameleon</button>
+          <p class="nav-label">Manage</p>
+          <button class="nav-item" data-view="team"><span>♧</span> Team</button>
+          <button class="nav-item" data-view="settings"><span>⚙</span> Settings</button>
+        </nav>
+        <div class="sidebar-footer"><div class="help-card"><span class="help-icon">?</span><div><strong>Need a hand?</strong><small>Visit the help center</small></div><span>→</span></div><div class="user-row"><div class="avatar">AR</div><div><strong>Alex Rivera</strong><small>Security admin</small></div><span class="more">•••</span></div></div>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar"><div class="breadcrumb"><span>Workspace</span><span>/</span><strong id="breadcrumb-label">Overview</strong></div><div class="top-actions"><button class="icon-button" aria-label="Search">⌕</button><button class="icon-button notification" aria-label="Notifications">♢<i></i></button><button class="profile-chip"><span class="avatar small">AR</span> Alex <span>⌄</span></button></div></header>
+        <section class="page" id="app-view">
+          <div class="page-heading"><div><p class="eyebrow">THURSDAY, OCTOBER 15, 2026</p><h1>Good morning, Alex <span class="wave">✦</span></h1><p class="subheading">Here's your security pulse for today.</p></div><button class="primary-button" id="scan-button"><span>＋</span> Run security scan</button></div>
+
+          <div class="alert-banner"><div class="alert-symbol">!</div><div><strong>Action needed</strong><p>4 incidents need your attention. The oldest has been open for 2 days.</p></div><button class="text-button" data-view-target="incidents">Review incidents <span>→</span></button></div>
+
+          <div class="metric-grid">
+            <article class="metric-card score-card"><div class="metric-top"><span class="metric-label">SECURITY SCORE</span><span class="trend positive">↑ 6.2%</span></div><div class="score-row"><strong id="score-value">82</strong><span>/ 100</span><div class="score-ring"><div><strong>82</strong><small>GOOD</small></div></div></div><p>Up from 77 last month</p></article>
+            <article class="metric-card"><div class="metric-top"><span class="metric-label">OPEN INCIDENTS</span><span class="trend negative">↑ 2</span></div><strong class="metric-number" id="incident-total">4</strong><p>2 high priority · 2 medium</p><div class="mini-bars"><i style="height: 35%"></i><i style="height: 55%"></i><i style="height: 42%"></i><i style="height: 75%"></i><i class="hot" style="height: 93%"></i><i style="height: 68%"></i><i style="height: 85%"></i></div></article>
+            <article class="metric-card"><div class="metric-top"><span class="metric-label">PROTECTED ASSETS</span><span class="trend positive">↑ 8.4%</span></div><strong class="metric-number">248</strong><p>232 healthy · 16 need review</p><div class="asset-progress"><span></span></div><div class="progress-labels"><small>Healthy</small><small>93.5%</small></div></article>
+            <article class="metric-card"><div class="metric-top"><span class="metric-label">LAST SCAN</span><span class="status-dot">● Live</span></div><strong class="metric-number compact" id="last-scan">Today, 09:42</strong><p id="scan-detail">No threats detected</p><button class="link-button" id="scan-again">Scan again <span>→</span></button></article>
+          </div>
+
+          <div class="content-grid"><section class="panel activity-panel"><div class="panel-header"><div><h2>Security activity</h2><p>Threats and events across your workspace</p></div><select aria-label="Activity time range"><option>Last 7 days</option><option>Last 30 days</option></select></div><div class="chart"><div class="y-axis"><span>100</span><span>75</span><span>50</span><span>25</span><span>0</span></div><div class="chart-body"><div class="grid-lines"><i></i><i></i><i></i><i></i><i></i></div><svg viewBox="0 0 650 190" preserveAspectRatio="none" role="img" aria-label="Security activity trend"><defs><linearGradient id="area" x1="0" x2="0" y1="0" y2="1"><stop offset="0%" stop-color="#5ce1b1" stop-opacity=".25"/><stop offset="100%" stop-color="#5ce1b1" stop-opacity="0"/></linearGradient></defs><path class="area" d="M0,142 C35,135 44,150 68,133 S110,112 132,119 S165,92 195,106 S231,135 253,112 S285,87 318,96 S346,120 372,108 S399,74 427,83 S463,113 485,97 S523,51 550,61 S602,52 650,20 L650,190 L0,190Z"/><path class="line" d="M0,142 C35,135 44,150 68,133 S110,112 132,119 S165,92 195,106 S231,135 253,112 S285,87 318,96 S346,120 372,108 S399,74 427,83 S463,113 485,97 S523,51 550,61 S602,52 650,20"/></svg><div class="x-axis"><span>09 Oct</span><span>10 Oct</span><span>11 Oct</span><span>12 Oct</span><span>13 Oct</span><span>14 Oct</span><span>15 Oct</span></div></div></div><div class="chart-legend"><span><i class="legend-dot green"></i> Protected events <b>1,284</b></span><span><i class="legend-dot orange"></i> Threats blocked <b>38</b></span></div></section>
+            <section class="panel quick-panel"><div class="panel-header"><div><h2>Quick actions</h2><p>Common security tasks</p></div></div><button class="quick-action" id="geoip-quick-button" data-view-target="geoip" style="border:1px solid #5ce1b1;background:#102a34;"><span class="action-icon green">🌐</span><span><strong style="color:#5ce1b1;">GeoIP Chameleon (5-Min Auto-Rotate)</strong><small style="color:#a0b8b5;">Mask IP & Location · 🛡️ Active</small></span><b>→</b></button><button class="quick-action" id="invite-button"><span class="action-icon purple">♧</span><span><strong>Invite team member</strong><small>Bring your team into the loop</small></span><b>→</b></button><button class="quick-action" id="report-button"><span class="action-icon orange">▤</span><span><strong>Generate report</strong><small>Export your security summary</small></span><b>→</b></button><button class="quick-action" id="policy-button"><span class="action-icon blue">⌁</span><span><strong>Review policies</strong><small>Keep controls up to date</small></span><b>→</b></button><div class="tip"><span>✦</span><div><strong>Security tip</strong><p>Enable MFA for all admin accounts to reduce account takeover risk by up to 99%.</p></div></div></section></div>
+
+          <section class="panel incidents-panel"><div class="panel-header"><div><h2>Priority incidents</h2><p>Investigate and resolve your most important findings</p></div><button class="text-button" data-view-target="incidents">View all incidents <span>→</span></button></div><div class="table-wrap"><table><thead><tr><th>INCIDENT</th><th>SEVERITY</th><th>ASSET</th><th>DETECTED</th><th>STATUS</th><th></th></tr></thead><tbody id="incident-table"><tr><td><div class="incident-name"><span class="incident-icon red">⌁</span><span><strong>Unusual login attempt</strong><small>Multiple failed logins from new location</small></span></div></td><td><span class="severity high">High</span></td><td>Admin portal</td><td>2 hours ago</td><td><span class="status open">Open</span></td><td><button class="row-menu" aria-label="Incident actions">•••</button></td></tr><tr><td><div class="incident-name"><span class="incident-icon orange">◌</span><span><strong>Outdated dependency</strong><small>Package has a known vulnerability</small></span></div></td><td><span class="severity high">High</span></td><td>api-prod-01</td><td>5 hours ago</td><td><span class="status investigating">Investigating</span></td><td><button class="row-menu" aria-label="Incident actions">•••</button></td></tr><tr><td><div class="incident-name"><span class="incident-icon yellow">⌂</span><span><strong>Public storage bucket</strong><small>Access policy allows public reads</small></span></div></td><td><span class="severity medium">Medium</span></td><td>media-assets</td><td>Yesterday</td><td><span class="status open">Open</span></td><td><button class="row-menu" aria-label="Incident actions">•••</button></td></tr></tbody></table></div></section>
+          <div class="footer-note"><span class="live-dot"></span> All systems operational <span class="separator">·</span> Last updated just now</div>
+        </section>
+      </main>
+    </div>
+    <template id="geoip-view-template">
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">REA CHAMELEON ENGINE 6.3.0</p>
+          <h1>GeoIP & IP Rotation <span class="wave">🌐</span></h1>
+          <p class="subheading">Dissect network endpoints and change your location & IP address automatically every 5 minutes.</p>
+        </div>
+        <div style="display:flex;gap:12px;align-items:center;">
+          <label style="display:flex;align-items:center;gap:8px;background:#102a34;color:#5ce1b1;padding:8px 14px;border-radius:8px;font-weight:600;font-size:13px;border:1px solid #2b535a;cursor:pointer;">
+            <input type="checkbox" id="master-shield-toggle" checked style="accent-color:var(--mint);width:16px;height:16px;" /> 🛡️ Chameleon Shield ON (5-Min Auto-Rotate)
+          </label>
+          <button class="primary-button" id="rotate-now-btn"><span>⚡</span> Rotate IP & Location Now</button>
+        </div>
+      </div>
+
+      <div class="metric-grid">
+        <article class="metric-card score-card">
+          <div class="metric-top"><span class="metric-label">ROTATION TIMER</span><span class="trend positive" id="shield-status-badge">● Active</span></div>
+          <div class="score-row">
+            <strong id="countdown-timer">05:00</strong>
+            <div class="score-ring">
+              <div><strong id="timer-percent">100%</strong><small>SYNC</small></div>
+            </div>
+          </div>
+          <p id="timer-status-caption">Auto-rotates IP & location every 5 mins</p>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-top"><span class="metric-label">DETECTED REAL IP</span><span class="status-dot">● Live API</span></div>
+          <strong class="metric-number compact" id="real-ip">Fetching...</strong>
+          <p id="real-location">Detecting ISP & region...</p>
+          <button class="link-button" id="test-live-ip-btn">Test live IP check <span>→</span></button>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-top"><span class="metric-label">SPOOFED VIRTUAL IP & LOC</span><span class="trend positive">🔒 Masked</span></div>
+          <strong class="metric-number compact" id="virtual-ip">185.220.101.7</strong>
+          <p id="virtual-location">Zurich, Switzerland (Lat: 47.37, Lon: 8.54)</p>
+          <button class="link-button" id="copy-ip-btn">Copy Virtual IP <span>→</span></button>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-top"><span class="metric-label">REA RE-ENGINEERING</span><span class="trend positive">Active</span></div>
+          <strong class="metric-number compact">Bypassed</strong>
+          <p>Zero DNS leaks detected</p>
+          <span class="link-button" id="trigger-geo-test-btn" style="cursor:pointer;">Test Browser Geo API <span>→</span></span>
+        </article>
+      </div>
+      <div class="content-grid">
+        <section class="panel activity-panel">
+          <div class="panel-header">
+            <div>
+              <h2>Global proxy node selector</h2>
+              <p>Choose target jurisdiction or enable automated 5-minute rotation pool</p>
+            </div>
+            <label class="toggle-wrap" style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+              <input type="checkbox" id="auto-rotate-toggle" checked style="accent-color:var(--mint);" /> Auto-Rotate (5 Min)
+            </label>
+          </div>
+          <div class="node-grid" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-top:16px;">
+            <button class="quick-action node-btn active" data-node="zurich" style="padding:12px;"><span class="action-icon green">🇨🇭</span><span><strong>Zurich, CH</strong><small>185.220.101.7</small></span></button>
+            <button class="quick-action node-btn" data-node="tokyo" style="padding:12px;"><span class="action-icon purple">🇯🇵</span><span><strong>Tokyo, JP</strong><small>103.253.140.9</small></span></button>
+            <button class="quick-action node-btn" data-node="reykjavik" style="padding:12px;"><span class="action-icon blue">🇮🇸</span><span><strong>Reykjavik, IS</strong><small>185.159.157.2</small></span></button>
+            <button class="quick-action node-btn" data-node="newyork" style="padding:12px;"><span class="action-icon orange">🇺🇸</span><span><strong>New York, US</strong><small>198.51.100.42</small></span></button>
+            <button class="quick-action node-btn" data-node="singapore" style="padding:12px;"><span class="action-icon green">🇸🇬</span><span><strong>Singapore, SG</strong><small>165.22.240.18</small></span></button>
+            <button class="quick-action node-btn" data-node="berlin" style="padding:12px;"><span class="action-icon purple">🇩🇪</span><span><strong>Berlin, DE</strong><small>89.187.160.73</small></span></button>
+          </div>
+        </section>
+
+        <section class="panel quick-panel">
+          <div class="panel-header">
+            <div>
+              <h2>REA Packet Inspector</h2>
+              <p>Live reverse-engineering telemetry</p>
+            </div>
+          </div>
+          <div class="terminal-box" style="background:#102a34;color:#5ce1b1;font-family:'DM Mono',monospace;padding:14px;border-radius:8px;font-size:12px;height:180px;overflow-y:auto;border:1px solid #2b535a;" id="rea-terminal">
+            [00:01] REA Core v6.3.0 initialized...
+            [00:02] Hooking browser geolocation & socket APIs...
+            [00:05] Routing through Zurich proxy node (185.220.101.7)...
+            [00:10] TLS fingerprint randomized (JA3/JA4 spoofed).
+            [00:15] DNS leak test passed: 0 requests leaked to ISP.
+            [00:30] Ready for 5-minute automated rotation cycle.
+          </div>
+        </section>
+      </div>
+
+      <section class="panel incidents-panel">
+        <div class="panel-header">
+          <div>
+            <h2>IP & Location History Log</h2>
+            <p>Recent chameleonic rotations executed by REA engine (5-min intervals)</p>
+          </div>
+          <button class="text-button" id="clear-logs-btn">Clear log <span>→</span></button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>TIMESTAMP</th><th>VIRTUAL IP</th><th>LOCATION</th><th>LAT / LON</th><th>ISP / PROTOCOL</th><th>STATUS</th></tr>
+            </thead>
+            <tbody id="rotation-log-table">
+              <tr>
+                <td>Just now</td>
+                <td><strong>185.220.101.7</strong></td>
+                <td>Zurich, Switzerland</td>
+                <td>47.3769, 8.5417</td>
+                <td>Tor Exit / Encrypted</td>
+                <td><span class="status investigating" style="background:#183b43;color:var(--mint);">Active</span></td>
+              </tr>
+              <tr>
+                <td>5 mins ago</td>
+                <td><strong>103.253.140.9</strong></td>
+                <td>Tokyo, Japan</td>
+                <td>35.6762, 139.6503</td>
+                <td>Datacenter Proxy / WireGuard</td>
+                <td><span class="status open">Rotated</span></td>
+              </tr>
+              <tr>
+                <td>10 mins ago</td>
+                <td><strong>185.159.157.2</strong></td>
+                <td>Reykjavik, Iceland</td>
+                <td>64.1466, -21.9426</td>
+                <td>Secure Enclave / OpenVPN</td>
+                <td><span class="status open">Rotated</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </template>
+
+    <div class="toast" id="toast" role="status"></div>
+    <script src="app.js"></script>
+  </body>
+</html>

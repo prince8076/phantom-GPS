@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ReaCopilot - AI Reverse Engineering Workbench</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none">
+            <circle cx="16" cy="16" r="11" stroke="currentColor" stroke-width="2.2" />
+            <path d="M16 5v6M16 21v6M5 16h6M21 16h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+            <path d="M12 21V11h5.2a3.4 3.4 0 0 1 0 6.8H12" stroke="currentColor" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1>ReaCopilot</h1>
+          <p>AI reverse-engineering workbench</p>
+        </div>
+      </div>
+
+      <div id="file-pill" class="file-pill hidden">
+        <span class="status-dot"></span>
+        <strong id="file-name">no file</strong>
+        <span id="file-size" class="muted"></span>
+      </div>
+
+      <div class="top-actions">
+        <button id="open-btn" class="btn primary">
+          Open binary
+          <kbd>Ctrl O</kbd>
+        </button>
+        <button id="ai-analyze-btn" class="btn" disabled>Analyze with AI</button>
+        <button id="export-btn" class="btn" disabled>Export</button>
+        <button id="settings-btn" class="btn ghost icon-btn" title="AI provider settings" aria-label="AI provider settings">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
+            <circle cx="12" cy="12" r="3.2" />
+            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1.03 1.56V21a2 2 0 1 1-4 0v-.09A1.7 1.7 0 0 0 9 19.4a1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.7 1.7 0 0 0 4.6 15a1.7 1.7 0 0 0-1.56-1.03H3a2 2 0 1 1 0-4h.09A1.7 1.7 0 0 0 4.6 9a1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.7 1.7 0 0 0 9 4.6h.09A1.7 1.7 0 0 0 10.12 3V3a2 2 0 1 1 4 0v.09A1.7 1.7 0 0 0 15.15 4.6a1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.7 1.7 0 0 0 19.4 9v.09a1.7 1.7 0 0 0 1.56 1.03H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1.03Z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main class="workbench">
+      <aside class="panel left-panel">
+        <nav class="tabs" id="left-tabs" aria-label="Analysis views">
+          <button class="tab active" data-tab="overview">Overview</button>
+          <button class="tab" data-tab="sections">Sections</button>
+          <button class="tab" data-tab="imports">Imports</button>
+          <button class="tab" data-tab="strings">Strings</button>
+          <button class="tab" data-tab="findings">Findings</button>
+        </nav>
+        <div class="panel-body" id="left-body"></div>
+      </aside>
+
+      <section class="panel center-panel">
+        <div class="center-head">
+          <div class="segmented" id="center-tabs">
+            <button class="active" data-ctab="disasm">Disassembly</button>
+            <button data-ctab="targets">Call targets</button>
+          </div>
+          <div class="center-tools" id="disasm-tools">
+            <select id="disasm-filter" aria-label="Instruction filter">
+              <option value="all">All instructions</option>
+              <option value="calls">Calls only</option>
+              <option value="branches">Branches only</option>
+              <option value="control">Calls + branches</option>
+            </select>
+            <input id="disasm-search" type="search" placeholder="Filter address or text" />
+          </div>
+        </div>
+        <div class="center-body" id="center-body"></div>
+      </section>
+
+      <aside class="panel right-panel">
+        <div class="chat-head">
+          <div>
+            <h2>AI Copilot</h2>
+            <span id="model-badge" class="badge muted">not configured</span>
+          </div>
+          <button id="clear-chat" class="btn ghost small">Clear</button>
+        </div>
+        <div class="chat-log" id="chat-log"></div>
+        <div class="chat-compose">
+          <div class="chips" id="quick-prompts">
+            <button data-prompt="Triage this binary: what is it, what is the most likely purpose, and which evidence is strongest?">Triage</button>
+            <button data-prompt="Which imports and strings suggest malicious or risky behavior? Rank them by confidence.">Suspicious behavior</button>
+            <button data-prompt="Explain the entry point and the first few calls it makes, based on the disassembly sample.">Entry point</button>
+            <button data-prompt="Give me the next five concrete analysis steps for this sample, with the exact evidence to check.">Next steps</button>
+          </div>
+          <textarea id="chat-input" rows="3" placeholder="Ask about imports, sections, strings, call targets or the entry point..." disabled></textarea>
+          <div class="compose-row">
+            <span class="hint">Enter to send - Shift + Enter for a new line</span>
+            <button id="send-btn" class="btn primary" disabled>Send</button>
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <footer class="statusbar">
+      <span id="status-left">Ready - open a binary to begin.</span>
+      <span id="status-right">Local static analysis - files stay on this machine</span>
+    </footer>
+  </div>
+
+  <div id="overlay" class="overlay hidden">
+    <div class="spinner" aria-hidden="true"></div>
+    <div>
+      <strong id="overlay-title">Analyzing binary</strong>
+      <p id="overlay-detail">Parsing headers, sections, imports and strings.</p>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <dialog id="settings-dialog" class="settings-dialog">
+    <form id="settings-form" method="dialog">
+      <header>
+        <h2>AI provider</h2>
+        <p>Any OpenAI-compatible chat completions endpoint works: OpenAI, a gateway, Ollama (<code>http://localhost:11434/v1</code>) or LM Studio (<code>http://localhost:1234/v1</code>).</p>
+      </header>
+      <label>
+        Base URL
+        <input id="set-base" type="url" placeholder="https://api.openai.com/v1" required />
+      </label>
+      <label>
+        Model
+        <input id="set-model" type="text" placeholder="gpt-4o-mini" required />
+      </label>
+      <label>
+        API key
+        <input id="set-key" type="password" autocomplete="off" placeholder="Leave empty for local models" />
+        <span class="field-note">Stored locally in the app config folder. Never written to reports.</span>
+      </label>
+      <div class="grid2">
+        <label>
+          Max tokens
+          <input id="set-tokens" type="number" min="256" max="32768" step="256" />
+        </label>
+        <label>
+          Temperature
+          <input id="set-temp" type="number" min="0" max="2" step="0.1" />
+        </label>
+      </div>
+      <footer>
+        <button id="cancel-settings" type="button" class="btn ghost">Cancel</button>
+        <button type="submit" class="btn primary">Save settings</button>
+      </footer>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

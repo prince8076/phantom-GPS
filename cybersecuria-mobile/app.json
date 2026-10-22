@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "CyberSecuria",
+    "slug": "cybersecuria",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#102a34"
+    },
+    "android": {
+      "package": "com.cybersecuria.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#102a34"
+      }
+    },
+    "ios": {
+      "bundleIdentifier": "com.cybersecuria.app"
+    },
+    "plugins": [
+      "expo-asset"
+    ]
+  }
+}

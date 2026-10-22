@@ -1,0 +1,520 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#06090e"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- TOP BAR: LOGO, TITLE & ACTIVE PILL -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="16dp">
+
+            <ImageView
+                android:layout_width="38dp"
+                android:layout_height="38dp"
+                android:src="@mipmap/ic_launcher"
+                android:contentDescription="Phantom GPS Logo" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_marginStart="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="phantom vpn"
+                    android:textColor="#ffffff"
+                    android:textSize="17sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="stealth location shield"
+                    android:textColor="#6b7c8f"
+                    android:textSize="11sp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvLivePing"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="● protected"
+                android:textColor="#00f2a9"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="6dp"
+                android:paddingBottom="6dp"
+                android:background="@drawable/bg_glass_card" />
+        </LinearLayout>
+
+        <!-- DRIBBBLE VPN HERO SECTION: GLOWING CIRCULAR POWER BUTTON & METRICS -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:background="@drawable/bg_glass_card"
+            android:padding="22dp"
+            android:layout_marginBottom="14dp">
+
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="tap to connect"
+                android:textColor="#8a99ad"
+                android:textSize="13sp"
+                android:layout_marginBottom="16dp" />
+
+            <!-- CIRCULAR NEON POWER BUTTON -->
+            <Button
+                android:id="@+id/btnToggleMock"
+                android:layout_width="140dp"
+                android:layout_height="140dp"
+                android:text="⚡\nconnect"
+                android:textColor="#00f0ff"
+                android:textSize="15sp"
+                android:textStyle="bold"
+                android:background="@drawable/bg_power_button"
+                android:gravity="center" />
+
+            <TextView
+                android:id="@+id/tvProtectionHint"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="system location actively overridden"
+                android:textColor="#5a6878"
+                android:textSize="11sp"
+                android:layout_marginTop="14dp" />
+
+            <!-- METRIC PILLS: IP, CADENCE, ACTIVE USERS -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:layout_marginTop="16dp">
+
+                <!-- OUTBOUND IP PILL -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_pill_metric"
+                    android:padding="8dp"
+                    android:gravity="center"
+                    android:layout_marginEnd="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="outbound ip"
+                        android:textColor="#6b7c8f"
+                        android:textSize="9sp" />
+
+                    <TextView
+                        android:id="@+id/tvOutboundIp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="185.220.101.98"
+                        android:textColor="#ffffff"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:singleLine="true" />
+                </LinearLayout>
+
+                <!-- CADENCE PILL -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_pill_metric"
+                    android:padding="8dp"
+                    android:gravity="center"
+                    android:layout_marginHorizontal="2dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="hop cadence"
+                        android:textColor="#6b7c8f"
+                        android:textSize="9sp" />
+
+                    <TextView
+                        android:id="@+id/tvHopCadence"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="300s"
+                        android:textColor="#00f0ff"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+
+                <!-- ACTIVE USERS PILL -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:background="@drawable/bg_pill_metric"
+                    android:padding="8dp"
+                    android:gravity="center"
+                    android:layout_marginStart="4dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="active users"
+                        android:textColor="#6b7c8f"
+                        android:textSize="9sp" />
+
+                    <TextView
+                        android:id="@+id/tvActiveUsersCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="1 device"
+                        android:textColor="#00f2a9"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnDevSettings"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="enable mock app in developer options"
+                android:textColor="#8a99ad"
+                android:background="@drawable/bg_input_field"
+                android:textSize="11sp"
+                android:visibility="gone"
+                android:layout_marginTop="12dp" />
+        </LinearLayout>
+
+        <!-- ACTIVE SERVER JURISDICTION CARD -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:padding="16dp"
+            android:layout_marginBottom="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="active jurisdiction"
+                    android:textColor="#6b7c8f"
+                    android:textSize="10sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvCadenceCountdown"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="05:00"
+                    android:textColor="#00f0ff"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvCity"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="🇨🇭 Zurich, Switzerland"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:layout_marginTop="4dp" />
+
+            <TextView
+                android:id="@+id/tvCoords"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="lat: 47.3769, lon: 8.5417"
+                android:textColor="#8a99ad"
+                android:textSize="12sp"
+                android:layout_marginTop="2dp" />
+
+            <Button
+                android:id="@+id/btnRandomHop"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:text="⚡ hop to random global city"
+                android:textColor="#ffffff"
+                android:background="@drawable/bg_input_field"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:layout_marginTop="12dp" />
+        </LinearLayout>
+
+        <!-- HOP CADENCE / TIMING CHANGE CARD (NEW USER FEATURE) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:padding="16dp"
+            android:layout_marginBottom="14dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="hop interval / timing change"
+                android:textColor="#6b7c8f"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <Spinner
+                android:id="@+id/spIntervalChoice"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_input_field" />
+
+            <Button
+                android:id="@+id/btnApplyInterval"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="update hop rotation timing"
+                android:textColor="#00f0ff"
+                android:background="@drawable/bg_input_field"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- ROUTE SIMULATION CARD (WITH LIVE AUTOCOMPLETE SEARCH FOR CITY / STATE / COUNTRY) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:padding="16dp"
+            android:layout_marginBottom="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="route simulation (road snapped)"
+                    android:textColor="#6b7c8f"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvRouteBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="idle"
+                    android:textColor="#8a99ad"
+                    android:textSize="10sp"
+                    android:background="@drawable/bg_input_field"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp" />
+            </LinearLayout>
+
+            <AutoCompleteTextView
+                android:id="@+id/actvOrigin"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:hint="search origin city / state / country..."
+                android:textColor="#ffffff"
+                android:textColorHint="#4a5664"
+                android:background="@drawable/bg_input_field"
+                android:padding="10dp"
+                android:textSize="12sp"
+                android:completionThreshold="1"
+                android:dropDownWidth="match_parent"
+                android:layout_marginTop="10dp" />
+
+            <AutoCompleteTextView
+                android:id="@+id/actvDestination"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:hint="search destination city / state / country..."
+                android:textColor="#ffffff"
+                android:textColorHint="#4a5664"
+                android:background="@drawable/bg_input_field"
+                android:padding="10dp"
+                android:textSize="12sp"
+                android:completionThreshold="1"
+                android:dropDownWidth="match_parent"
+                android:layout_marginTop="8dp" />
+
+            <Spinner
+                android:id="@+id/spTravelMode"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_input_field"
+                android:layout_marginTop="8dp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="12dp">
+
+                <Button
+                    android:id="@+id/btnStartPhoneRoute"
+                    android:layout_width="0dp"
+                    android:layout_height="44dp"
+                    android:layout_weight="1"
+                    android:text="▶ start route"
+                    android:textColor="#050a10"
+                    android:background="@drawable/bg_btn_gradient"
+                    android:textSize="12sp"
+                    android:textStyle="bold" />
+
+                <Button
+                    android:id="@+id/btnStopPhoneRoute"
+                    android:layout_width="wrap_content"
+                    android:layout_height="44dp"
+                    android:text="⏹ stop"
+                    android:textColor="#ffffff"
+                    android:background="@drawable/bg_input_field"
+                    android:textSize="12sp"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <!-- SERVER POOL & GLOBAL SELECTOR -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:padding="16dp"
+            android:layout_marginBottom="14dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="global server pool (pick location)"
+                android:textColor="#6b7c8f"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp" />
+
+            <Spinner
+                android:id="@+id/spGlobalPool"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@drawable/bg_input_field" />
+
+            <Button
+                android:id="@+id/btnApplyCity"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:text="teleport to selected location"
+                android:textColor="#00f0ff"
+                android:background="@drawable/bg_input_field"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp" />
+        </LinearLayout>
+
+        <!-- ADMIN PANEL: CONNECTED DEVICES & ACTIVE USERS -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/bg_glass_card"
+            android:padding="16dp"
+            android:layout_marginBottom="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="admin: live connected devices"
+                    android:textColor="#00f0ff"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvAdminBadge"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="1 active"
+                    android:textColor="#00f2a9"
+                    android:textSize="10sp"
+                    android:background="@drawable/bg_input_field"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingTop="3dp"
+                    android:paddingBottom="3dp" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvDevicesList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="• Android Phone (Phantom APK) - Active"
+                android:textColor="#8a99ad"
+                android:textSize="11sp"
+                android:lineSpacingExtra="4dp" />
+        </LinearLayout>
+
+        <!-- CONTROL HUB SERVER ENDPOINT (BACKEND API LINK) -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="backend api server (auto-synced)"
+            android:textColor="#4a5664"
+            android:textSize="10sp" />
+
+        <EditText
+            android:id="@+id/etServerUrl"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:text="https://scores-ide-bald-cliff.trycloudflare.com"
+            android:textColor="#8a99ad"
+            android:background="@drawable/bg_input_field"
+            android:padding="8dp"
+            android:textSize="11sp"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="24dp" />
+
+    </LinearLayout>
+</ScrollView>
