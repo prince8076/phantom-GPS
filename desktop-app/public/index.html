@@ -838,6 +838,11 @@
       margin: 16px 0 12px;
       box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
     }
+
+    /* Dark-mode filter for keyless OSM tiles (keeps the stealth-radar look) */
+    .leaflet-tile-pane {
+      filter: invert(100%) hue-rotate(180deg) brightness(0.92) contrast(0.88) saturate(0.65);
+    }
   </style>
 </head>
 <body>
@@ -1123,10 +1128,11 @@
         map = L.map('live-map', { zoomControl: false }).setView([lat, lon], 13);
         L.control.zoom({ position: 'bottomright' }).addTo(map);
 
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        // Keyless OSM tiles (CARTO basemaps now require an API key).
+        // The .leaflet-tile-pane CSS filter above restores the dark look.
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
           maxZoom: 19,
-          subdomains: 'abcd',
-          attribution: '© CARTO'
+          attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
         const customIcon = L.divIcon({
