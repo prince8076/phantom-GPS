@@ -29,24 +29,28 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:theme="@android:style/Theme.Material.NoActionBar"
         android:usesCleartextTraffic="true">
+        <!-- Stealth-location dashboard. Now reached via the Stealth bottom-nav tab. -->
         <activity
             android:name=".MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:exported="true"
+            android:label="Stealth" />
         <!-- Phantom VPN connection screen (Proton-patterned client UI). -->
         <activity
             android:name=".vpn.VpnConnectActivity"
             android:exported="false"
             android:label="Phantom VPN" />
-        <!-- Bottom-nav tabs: Home · Countries · Profiles · Settings. -->
+        <!-- Bottom-nav tabs: Home · Countries · Profiles · Settings · Stealth.
+             HomeActivity is the app launcher: opening the app lands straight
+             on the Proton-patterned VPN home screen. -->
         <activity
             android:name=".vpn.HomeActivity"
-            android:exported="false"
-            android:label="Phantom VPN" />
+            android:exported="true"
+            android:label="Phantom VPN">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name=".vpn.CountriesActivity"
             android:exported="false"

@@ -1,5 +1,6 @@
 package ai.omnirush.chameleon.vpn;
 
+import ai.omnirush.chameleon.MainActivity;
 import ai.omnirush.chameleon.R;
 
 import android.app.Activity;
@@ -10,7 +11,7 @@ import android.widget.TextView;
 
 /**
  * Wires the shared bottom navigation (bottom_nav.xml) for the tab activities:
- * Home · Countries · Profiles · Settings. Highlights the active tab with the
+ * Home · Countries · Profiles · Settings · Stealth. Highlights the active tab with the
  * amethyst pill and routes taps without stacking duplicate activities.
  *
  * <p>Plain-framework helper (no AndroidX). Clean-room implementation.
@@ -21,17 +22,22 @@ public final class BottomNavHelper {
     public static final int TAB_COUNTRIES = 1;
     public static final int TAB_PROFILES = 2;
     public static final int TAB_SETTINGS = 3;
+    public static final int TAB_STEALTH = 4;
 
     private BottomNavHelper() {}
 
     public static void wire(final Activity activity, int activeTab) {
-        int[] tabs = {R.id.nav_home, R.id.nav_countries, R.id.nav_profiles, R.id.nav_settings};
+        int[] tabs = {R.id.nav_home, R.id.nav_countries, R.id.nav_profiles,
+                      R.id.nav_settings, R.id.nav_stealth};
         int[] icons = {R.id.nav_home_icon, R.id.nav_countries_icon,
-                       R.id.nav_profiles_icon, R.id.nav_settings_icon};
+                       R.id.nav_profiles_icon, R.id.nav_settings_icon,
+                       R.id.nav_stealth_icon};
         int[] labels = {R.id.nav_home_label, R.id.nav_countries_label,
-                        R.id.nav_profiles_label, R.id.nav_settings_label};
+                        R.id.nav_profiles_label, R.id.nav_settings_label,
+                        R.id.nav_stealth_label};
         final Class<?>[] targets = {HomeActivity.class, CountriesActivity.class,
-                                    ProfilesActivity.class, SettingsActivity.class};
+                                    ProfilesActivity.class, SettingsActivity.class,
+                                    MainActivity.class};
 
         for (int i = 0; i < tabs.length; i++) {
             final int index = i;

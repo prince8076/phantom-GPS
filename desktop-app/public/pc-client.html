@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>phantom · pc client</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="theme.css" />
+  <style>
+    /* pc-* : desktop 3-column client — icon rail | connection hero | locations */
+    html, body { height: 100%; }
+    .pc-shell {
+      display: grid;
+      grid-template-columns: 76px minmax(0, 1fr) 340px;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ---- left icon rail ---- */
+    .pc-rail {
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; align-items: center;
+      padding: var(--sp-4) 0; gap: var(--sp-2);
+    }
+    .pc-rail .pc-logo { width: 38px; height: 38px; margin-bottom: var(--sp-3); }
+    .pc-rail-btn { width: 44px; height: 44px; border-radius: var(--r-md); }
+    .pc-rail-btn svg { width: 20px; height: 20px; }
+    .pc-rail-btn.is-on {
+      background: rgba(139, 92, 246, 0.14);
+      border-color: var(--accent);
+      color: var(--accent-light);
+      box-shadow: var(--glow-amethyst);
+    }
+    .pc-rail-foot { margin-top: auto; }
+
+    /* ---- center hero ---- */
+    .pc-center {
+      overflow-y: auto;
+      display: flex; flex-direction: column; align-items: center;
+      padding: var(--sp-8) var(--sp-6);
+    }
+    .pc-hero { display: flex; flex-direction: column; align-items: center; gap: var(--sp-3); max-width: 560px; width: 100%; margin: auto 0; }
+    .pc-mark { width: 104px; height: 104px; filter: drop-shadow(0 0 28px rgba(139, 92, 246, 0.45)); }
+    .pc-timer { font-size: 32px; font-weight: 700; letter-spacing: 0.04em; }
+    .pc-statusrow { gap: var(--sp-3); }
+    .pc-statusrow b { font-size: 17px; }
+    .pc-locpill { border-radius: var(--r-pill); padding: var(--sp-2) var(--sp-4); font-size: 14px; }
+    .pc-locpill svg { width: 15px; height: 15px; color: var(--text-dim); }
+    .pc-connect { min-width: 300px; min-height: 54px; font-size: 15px; border-radius: var(--r-md); margin-top: var(--sp-2); }
+    .pc-connect.is-live {
+      background: rgba(224, 101, 92, 0.12);
+      color: var(--danger);
+      border: 1px solid rgba(224, 101, 92, 0.45);
+      box-shadow: none;
+    }
+    .pc-connect.is-live:hover { background: rgba(224, 101, 92, 0.22); box-shadow: none; }
+    .pc-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-4); width: 100%; margin-top: var(--sp-4); }
+    .pc-stat-card { align-items: center; text-align: center; }
+
+    /* ---- right locations panel ---- */
+    .pc-right {
+      background: var(--bg-surface);
+      border-left: 1px solid var(--border);
+      padding: var(--sp-4);
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: var(--sp-3);
+    }
+    .pc-right h4 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-dim); font-family: var(--font-mono); font-weight: 600; }
+    .pc-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+    .pc-hubcard { padding: var(--sp-3); }
+    .pc-hubcard p { font-size: 11px; margin-top: var(--sp-2); }
+    .pc-locrow {
+      display: grid; grid-template-columns: 40px 1fr auto; gap: var(--sp-2);
+      align-items: center; padding: var(--sp-2);
+      border: 1px solid transparent; border-radius: var(--r-sm); cursor: pointer;
+      transition: background-color var(--t-fast) var(--ease-out), border-color var(--t-fast) var(--ease-out);
+    }
+    .pc-locrow:hover { background: var(--bg-raised); border-color: var(--border); }
+    .pc-locrow.is-active { background: rgba(139, 92, 246, 0.08); border-color: var(--border-glow); }
+    .pc-locrow .nm { font-size: 13px; font-weight: 600; display: block; }
+    .pc-locrow .ms { font-family: var(--font-mono); font-size: 11px; color: var(--text-dim); }
+    .pc-check { color: var(--energy); font-weight: 700; }
+    .pc-scroll { display: flex; flex-direction: column; gap: 2px; }
+
+    @media (max-width: 1100px) {
+      .pc-shell { grid-template-columns: 64px minmax(0, 1fr) 290px; }
+    }
+  </style>
+</head>
+<body class="th-dotgrid">
+  <div class="pc-shell">
+    <!-- icon rail -->
+    <aside class="pc-rail" aria-label="Primary">
+      <img class="pc-logo" src="brand/logo.svg" alt="Phantom" />
+      <button class="ic-box-web pc-rail-btn is-on" title="VPN" aria-label="VPN"><svg><use href="icons.svg#i-shield"/></svg></button>
+      <button class="ic-box-web pc-rail-btn" title="Servers" aria-label="Servers"><svg><use href="icons.svg#i-globe"/></svg></button>
+      <button class="ic-box-web pc-rail-btn" title="Profiles" aria-label="Profiles"><svg><use href="icons.svg#i-layers"/></svg></button>
+      <button class="ic-box-web pc-rail-btn" title="Settings" aria-label="Settings"><svg><use href="icons.svg#i-sliders"/></svg></button>
+      <div class="pc-rail-foot"><span class="th-pulse idle" id="hubDot" title="Hub status"></span></div>
+    </aside>
+
+    <!-- connection hero -->
+    <main class="pc-center">
+      <div class="pc-hero">
+        <img class="pc-mark" src="brand/logo.svg" alt="" />
+        <div class="th-mono pc-timer" id="pcTime">00:00:00</div>
+        <div class="th-row pc-statusrow">
+          <span class="th-pulse idle" id="pcDot"></span>
+          <b id="pcStatus">Not connected</b>
+          <span class="th-badge" id="pcIp">ip · —</span>
+        </div>
+        <button class="th-btn th-btn-ghost pc-locpill" id="pcLocPill">
+          <span class="th-badge th-mono" id="pcLocCode" style="min-width:34px;text-align:center">—</span>
+          <span id="pcLocName">Pick a location</span>
+          <svg><use href="icons.svg#i-chev"/></svg>
+        </button>
+        <button class="th-btn th-btn-primary pc-connect" id="pcPower" aria-pressed="false">Connect</button>
+        <div class="pc-stats">
+          <div class="th-card th-stat pc-stat-card"><span class="k">Protocol</span><span class="v" id="pcProto">—</span></div>
+          <div class="th-card th-stat pc-stat-card"><span class="k">Server load</span><span class="v th-row" style="justify-content:center;gap:8px"><span class="th-loadbar" style="flex:1;max-width:90px"><i id="pcLoadBar" style="width:0%"></i></span><span id="pcLoad">—</span></span></div>
+          <div class="th-card th-stat pc-stat-card"><span class="k">Data up / down</span><span class="v" id="pcData">0 / 0 MB</span></div>
+        </div>
+      </div>
+    </main>
+
+    <!-- locations panel -->
+    <aside class="pc-right" aria-label="Locations">
+      <input class="th-input" id="pcSearch" type="search" placeholder="Search locations" aria-label="Search locations" />
+      <div class="pc-chips" id="pcFilters">
+        <button class="th-chip th-chip-on" data-f="all">All</button>
+        <button class="th-chip" data-f="streaming">Streaming</button>
+        <button class="th-chip" data-f="p2p">P2P</button>
+        <button class="th-chip" data-f="core">Secure Core</button>
+        <button class="th-chip" data-f="tor">Tor</button>
+      </div>
+      <section class="th-card pc-hubcard" aria-label="Your hub">
+        <h4>Your hub</h4>
+        <div class="th-row" style="margin-top:8px">
+          <span class="th-pulse idle" id="hubDot2"></span>
+          <span class="th-mono" style="font-size:12px" id="hubTxt">checking…</span>
+          <span class="th-mono th-dim" style="font-size:12px;margin-left:auto" id="hubMs"></span>
+        </div>
+        <p class="th-dim">Self-hosted · no account · your server, your rules.</p>
+      </section>
+      <h4>Top locations</h4>
+      <div class="pc-scroll" id="pcTop"></div>
+      <h4>All locations</h4>
+      <div class="pc-scroll" id="pcAll"></div>
+    </aside>
+  </div>
+
+  <script>
+    "use strict";
+    /* Seeded demo fleet — replace with GET /api/servers from your hub for live data. */
+    const SERVERS = [
+      { code: "US", country: "United States", city: "New York",  load: 32, ms: 48,  feat: ["streaming", "p2p"] },
+      { code: "DE", country: "Germany",       city: "Frankfurt", load: 45, ms: 62,  feat: ["streaming"] },
+      { code: "NL", country: "Netherlands",  city: "Amsterdam", load: 28, ms: 55,  feat: ["p2p", "tor"] },
+      { code: "CH", country: "Switzerland",  city: "Zurich",    load: 61, ms: 71,  feat: ["core"] },
+      { code: "SG", country: "Singapore",     city: "Singapore", load: 52, ms: 118, feat: ["streaming", "p2p"] },
+      { code: "JP", country: "Japan",         city: "Tokyo",     load: 38, ms: 132, feat: ["streaming"] },
+      { code: "SE", country: "Sweden",        city: "Stockholm", load: 24, ms: 84,  feat: ["core", "tor"] },
+      { code: "IN", country: "India",         city: "Mumbai",    load: 71, ms: 22,  feat: ["p2p"] },
+    ];
+
+    const $ = (id) => document.getElementById(id);
+    const state = { connected: false, server: null, t0: 0, timer: null, up: 0, down: 0, filter: "all", q: "" };
+
+    function loadClass(l) { return l >= 70 ? "hot" : l >= 45 ? "warm" : ""; }
+
+    function rowHTML(s) {
+      const active = state.server === s;
+      return (
+        '<span class="th-badge th-mono">' + s.code + "</span>" +
+        '<span><span class="nm">' + s.country + '</span><span class="ms">' + s.city + " · " + s.ms + " ms · " + s.load + "% load</span></span>" +
+        '<span class="' + (active && state.connected ? "pc-check" : "ms") + '">' +
+          (active && state.connected ? "✓" : "") + "</span>"
+      );
+    }
+
+    function renderLists() {
+      const match = (s) =>
+        (state.filter === "all" || s.feat.includes(state.filter)) &&
+        (s.country + " " + s.city).toLowerCase().includes(state.q);
+      const top = $("pcTop"), all = $("pcAll");
+      top.innerHTML = ""; all.innerHTML = "";
+      const matched = SERVERS.filter(match);
+      matched.slice().sort((a, b) => a.ms - b.ms).slice(0, 3).forEach((s) => top.appendChild(mkRow(s)));
+      matched.forEach((s) => all.appendChild(mkRow(s)));
+      if (!matched.length) all.innerHTML = '<p class="th-dim" style="font-size:12px">No locations match.</p>';
+    }
+
+    function mkRow(s) {
+      const el = document.createElement("div");
+      el.className = "pc-locrow" + (state.server === s ? " is-active" : "");
+      el.setAttribute("role", "button");
+      el.setAttribute("tabindex", "0");
+      el.innerHTML = rowHTML(s);
+      const go = () => selectServer(s);
+      el.addEventListener("click", go);
+      el.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } });
+      return el;
+    }
+
+    function fmtTime(sec) {
+      const h = String(Math.floor(sec / 3600)).padStart(2, "0");
+      const m = String(Math.floor((sec % 3600) / 60)).padStart(2, "0");
+      const s = String(sec % 60).padStart(2, "0");
+      return h + ":" + m + ":" + s;
+    }
+
+    function selectServer(s) {
+      state.server = s;
+      $("pcLocCode").textContent = s.code;
+      $("pcLocName").textContent = s.country + " · " + s.city;
+      if (state.connected) applyConnected(s);
+      renderLists();
+    }
+
+    function applyConnected(s) {
+      $("pcDot").className = "th-pulse ok";
+      $("pcStatus").textContent = "Connected";
+      $("pcIp").textContent = "ip · 185.232." + (10 + Math.floor(Math.random() * 200)) + "." + (2 + Math.floor(Math.random() * 250));
+      $("pcProto").textContent = "WG-UDP";
+      $("pcLoad").textContent = s.load + "%";
+      $("pcLoadBar").style.width = s.load + "%";
+      $("pcLoadBar").parentElement.className = "th-loadbar " + loadClass(s.load);
+      const btn = $("pcPower");
+      btn.textContent = "Disconnect";
+      btn.classList.add("is-live");
+      btn.setAttribute("aria-pressed", "true");
+    }
+
+    function connect() {
+      if (!state.server) selectServer(SERVERS[0]);
+      state.connected = true;
+      state.t0 = Date.now();
+      state.up = 0; state.down = 0;
+      state.timer = setInterval(() => {
+        $("pcTime").textContent = fmtTime(Math.floor((Date.now() - state.t0) / 1000));
+        state.up += 0.4 + Math.random() * 1.2;
+        state.down += 1.5 + Math.random() * 4;
+        $("pcData").textContent = state.up.toFixed(0) + " / " + state.down.toFixed(0) + " MB";
+      }, 1000);
+      applyConnected(state.server);
+      renderLists();
+    }
+
+    function disconnect() {
+      state.connected = false;
+      clearInterval(state.timer);
+      $("pcDot").className = "th-pulse idle";
+      $("pcStatus").textContent = "Not connected";
+      $("pcIp").textContent = "ip · —";
+      $("pcTime").textContent = "00:00:00";
+      $("pcProto").textContent = "—";
+      $("pcLoad").textContent = "—";
+      $("pcLoadBar").style.width = "0%";
+      $("pcData").textContent = "0 / 0 MB";
+      const btn = $("pcPower");
+      btn.textContent = "Connect";
+      btn.classList.remove("is-live");
+      btn.setAttribute("aria-pressed", "false");
+      renderLists();
+    }
+
+    $("pcPower").addEventListener("click", () => (state.connected ? disconnect() : connect()));
+    $("pcLocPill").addEventListener("click", () => $("pcSearch").focus());
+    $("pcSearch").addEventListener("input", (e) => { state.q = e.target.value.trim().toLowerCase(); renderLists(); });
+
+    $("pcFilters").querySelectorAll("[data-f]").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        $("pcFilters").querySelectorAll("[data-f]").forEach((c) => c.classList.remove("th-chip-on"));
+        chip.classList.add("th-chip-on");
+        state.filter = chip.getAttribute("data-f");
+        renderLists();
+      });
+    });
+
+    document.querySelectorAll(".pc-rail-btn").forEach((b) => {
+      b.addEventListener("click", () => {
+        document.querySelectorAll(".pc-rail-btn").forEach((x) => x.classList.remove("is-on"));
+        b.classList.add("is-on");
+      });
+    });
+
+    (async () => {
+      try {
+        const t0 = performance.now();
+        const r = await fetch("/api/status", { cache: "no-store" });
+        if (!r.ok) throw new Error("down");
+        const ms = Math.round(performance.now() - t0);
+        $("hubDot").className = "th-pulse live";
+        $("hubDot2").className = "th-pulse live";
+        $("hubTxt").textContent = "hub · online";
+        $("hubMs").textContent = ms + " ms";
+      } catch (_) {
+        $("hubTxt").textContent = "hub · offline";
+      }
+    })();
+
+    renderLists();
+  </script>
+</body>
+</html>

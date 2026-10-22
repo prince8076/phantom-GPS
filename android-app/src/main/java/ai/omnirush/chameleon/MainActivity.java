@@ -121,6 +121,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // Bottom navigation: the VPN Home screen is now the launcher,
+        // so this stealth dashboard is the "Stealth" tab.
+        ai.omnirush.chameleon.vpn.BottomNavHelper.wire(
+                this, ai.omnirush.chameleon.vpn.BottomNavHelper.TAB_STEALTH);
+
         handler = new Handler(Looper.getMainLooper());
         pollRunnable = new StatusPollTask(this);
 
